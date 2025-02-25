@@ -1,0 +1,40 @@
+---
+title: "STATS 266 Handout"
+author: "Qi Wang"
+date: "`r Sys.Date()`"
+output: 
+  pdf_document:
+    number_sections: true
+    toc: true
+    toc_depth: 2
+fontsize: 11pt
+geometry: margin=1in
+---
+\newpage
+
+# Introduction
+
+Welcome to this **Introduction to R**. This document covers the basics, from installation to working with data.
+
+## What is R?
+
+R is a programming language designed for **statistical computing** and **data visualization**.
+
+## Installing R and RStudio
+
+To start using R, install:
+- **R**: Download from [CRAN](https://cran.r-project.org/)
+- **RStudio** (optional but recommended): Download from [RStudio](https://posit.co/)
+
+---
+
+# Getting Started with R
+
+## Basic Syntax
+
+Here are some fundamental R commands:
+
+```r
+# Basic arithmetic
+2 + 2
+sqrt(16)
