@@ -1,5 +1,5 @@
 ---
-title: "STATS 266 Handout"
+title: "STATS 266 Handout - Introduction & Basics"
 author: "Qi Wang"
 date: "`r Sys.Date()`"
 output: 
@@ -7,6 +7,7 @@ output:
     number_sections: true
     toc: true
     toc_depth: 2
+    latex_engine: xelatex
 fontsize: 11pt
 geometry: margin=1in
 ---
@@ -14,19 +15,70 @@ geometry: margin=1in
 
 # Introduction
 
-Welcome to this **Introduction to R**. This document covers the basics, from installation to working with data.
+Welcome to **STATS 266: Introduction to R**. This handout provides an overview of R, including its installation, basic operations, and data handling capabilities. By the end of this document, you should be able to:
+\begin{itemize}
+  \item Understand the purpose of R and RStudio.
+  \item Install and set up R for your coursework.
+  \item Learn basic R syntax, data structures, and visualization tools.
+\end{itemize}
 
-## What is R?
+\newpage
 
-R is a programming language designed for **statistical computing** and **data visualization**.
+# What is R?
 
-## Installing R and RStudio
+## Overview
+**R** is a programming language specifically designed for **statistical computing, data analysis, and visualization**. It is widely used in academia, research, and industry.
 
-To start using R, install:
-- **R**: Download from [CRAN](https://cran.r-project.org/)
-- **RStudio** (optional but recommended): Download from [RStudio](https://posit.co/)
+### Why use R?
+- **Open-source** and free to use.
+- **Strong statistical capabilities** with built-in functions.
+- **Data visualization tools** like `ggplot2`.
+- **Extensive community support** with thousands of packages available on CRAN.
 
----
+
+\newpage
+
+# Installing R and RStudio
+
+## Installing R
+To install **R**, follow these steps:
+1. Visit the **CRAN** website: [https://cran.r-project.org/](https://cran.r-project.org/)
+2. Select your operating system (**Windows / macOS / Linux**).
+3. Download and install the latest version.
+
+## Installing RStudio
+RStudio is an **Integrated Development Environment (IDE)** for R that provides:
+- A user-friendly interface.
+- Code organization tools.
+- An embedded console and visualization panel.
+
+### Installation Steps:
+1. Visit [RStudio Download Page](https://posit.co/download/rstudio-desktop/)
+2. Choose your operating system and download **RStudio Desktop**.
+3. Install and open RStudio.
+
+\newpage
+
+# Getting Started with R
+
+## RStudio Interface Overview
+After opening **RStudio**, you will see four main panels:
+1. **Console**: Where you enter R commands.
+2. **Environment/History**: Displays variables and past commands.
+3. **Files/Plots/Packages**: Manages files, plots, and installed packages.
+4. **Script Editor**: Write and save R scripts (`.R` files).
+
+## Basic R Commands
+### Mathematical Operations
+```r
+# Basic arithmetic
+3 + 5       # Addition
+10 - 4      # Subtraction
+5 * 2       # Multiplication
+10 / 2      # Division
+2^3         # Exponentiation
+sqrt(16)    # Square root
+```
 
 # Getting Started with R
 
@@ -38,3 +90,4 @@ Here are some fundamental R commands:
 # Basic arithmetic
 2 + 2
 sqrt(16)
+```
