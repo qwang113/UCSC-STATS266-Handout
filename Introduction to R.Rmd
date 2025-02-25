@@ -3,11 +3,10 @@ title: "STATS 266 Handout - Introduction & Basics"
 author: "Qi Wang"
 date: "`r Sys.Date()`"
 output: 
-  pdf_document:
+  html_document:
     number_sections: true
     toc: true
     toc_depth: 2
-    latex_engine: xelatex
 fontsize: 11pt
 geometry: margin=1in
 ---
