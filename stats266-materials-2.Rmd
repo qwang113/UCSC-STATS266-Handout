@@ -1,0 +1,248 @@
+---
+title: "STATS 266 Handout - Data Structures & Manipulation"
+author: "Qi Wang"
+date: "`r Sys.Date()`"
+output: 
+  pdf_document:
+    number_sections: true
+    toc: true
+    toc_depth: 2
+    latex_engine: xelatex
+fontsize: 11pt
+geometry: margin=1in
+
+header-includes: |
+  \usepackage{xcolor}
+  \usepackage{hyperref}
+  \hypersetup{
+    colorlinks=true,
+    linkcolor=black,       % Internal links (e.g., table of contents)
+    urlcolor=blue,         % External hyperlinks (change to your preferred color)
+    citecolor=red          % Citation links
+  }
+---
+\newpage
+
+# Introduction
+
+Welcome to **STATS 266: Introduction to R**. This handout provides an introduction about data structures and manipulation in R. By the end of this document, you should be able to:
+\begin{itemize}
+  \item Identify the 5 main data types.
+  \item Begin exploring data frames, and understand how they are related to vectors and lists.
+  \item Be able to ask questions from R about the type, class, and structure of an object.
+  \item Understand the information of the attributes “names”, “class”, and “dim”.
+\end{itemize}
+For this part, valuable materials to refer to include \textcolor{blue}{http://adv-r.had.co.nz/Subsetting.html} and \textcolor{blue}{https://swcarpentry.github.io/r-novice-gapminder/04-data-structures-part1.html}.
+
+# Type of Variables
+
+There are five major types of atomic vectors: logical, integer, double, complex, and character. Integer
+and double are also known as numeric vectors.
+```{r}
+v1 <- c(TRUE,FALSE)
+typeof(v1)
+```
+```{r}
+v2 <- c(1L,2L,3L)
+typeof(v2)
+```
+```{r}
+v3 <- c(1,2,3)
+typeof(v3)
+```
+```{r}
+v4 <- c("string 1", "string 2")
+typeof(v4)
+```
+
+```{r}
+v5 <- 1+1i
+typeof(v5)
+```
+# Data Structures
+
+Data in the real world will not exist as one single element. They always exists like a vector, matrix, or data frame and so on. So this section introduces the data structures in R and how we can subset them. 
+
+## Atomic Vectors
+
+### What is an atomic vector?
+An atomic vector in R is the simplest type of data structure that holds elements of the same data type. It is a one-dimensional structure where all elements belong to the same class (e.g., numeric, character, logical).
+
+I believe most of you are now confused what does the function \texttt{c()} do here. It can be understood as a way to concatenate elements and creating a new vector.
+
+To combine atomic vectors, the function \texttt{c()} is used. It flattens vectors, creating a new atomic vector containing all of the elements. When dealing with combining different types, we need to be careful:
+```{r}
+c(1,0,TRUE,FALSE)
+```
+```{r}
+c(1,0,'a','b')
+```
+For missing values, R treats them as \texttt{NA} short for not applicable. Most calulations related to
+\texttt{NA} lead to \texttt{NA}, unless the results hold true for all possible values.
+
+### Subsetting an atomic vector
+
+We use single bracket \texttt{[i]} to get the i-th element of the vector:
+```{r}
+v1 <- c(2,4,6,8,10)
+v1[1]
+v1[c(1,3)]
+v1[c(T,F,T,F,T)]
+```
+More advanced cases include filtering some elements that we want. For example, if we want elements between -0.5 and 0.5 in a vector, what should we do?
+
+```{r}
+v1 <- round(rnorm(100,0,0.5),2)
+v1
+```
+We want to find, which of the elements in the vector are those we want:
+```{r}
+idx <- which(v1 > -0.5 & v1 < 0.5)
+idx
+```
+These are indices! It returns to the position of the vector that we want. So we just subset the vector:
+```{r}
+v1[idx]
+```
+Basic ideas here are to first find which positions in the series are those we want. We set filtering conditions, combine with \texttt{which} function to get the positions, then just subset the full vector.
+
+
+
+
+## Matrix
+
+
+Note that vectors are just one dimensional, we can also create a matrix or tensor(array) in R when we have more than one dimension. For example, we can create a 4 by 4 matrix:
+```{r}
+matrix(1:16, nrow = 4, ncol = 4)
+```
+Did you notice that the elements are assigned by column? we can add an argument \texttt{byrow = TRUE} in the matrix function, to assign values by row. We can also bind two matrices by row or column:
+```{r}
+m1 <- matrix(1:16, nrow = 4, ncol = 4)
+m2 <- matrix(17:32, nrow = 4, ncol = 4)
+cbind(m1,m2)
+```
+```{r}
+rbind(m1,m2)
+```
+In R, we have some functions to calculate the sum of the rows and columns too:
+```{r}
+colSums(m1)
+rowSums(m1)
+```
+More: In statistical analysis, we can do numeric matrix operations including multiplication, addition, inversion, transpose, eigen decomposition, determinant, and so on. Refer to: \textcolor{blue}{http://www.philender.com/courses/multivariate/notes/matr.html} for more interesting operations.
+### Subsetting a Matrix
+To subset a matrix, there are three possible ways using bracket:
+```{r}
+m1
+```
+Subsetting a matrix by regarding it to be a vector: (\textcolor{red}{Dangerous})
+```{r}
+m1[1:5]
+```
+Subsetting the specific row or column of the matrix:
+
+```{r}
+m1[1,]
+m1[,1]
+```
+Subsetting the specific some elements of the matrix:
+
+```{r}
+m1[1,1]
+m1[1,1:2]
+```
+We can also use \texttt{which()} function to subset the matrix, this is left for an exercise for you.
+
+## Array 
+
+Similar to matrix, if we have more than two dimensions of the data, we need to use an array. It's also known as tensor in deep learning literature:
+```{r}
+a1 <- array(1:8, dim = c(2,2,2))
+a1
+```
+It's like a 3D Lego now, right? We have each slices being a matrix, and put one slices above the other one. Subsetting here follows the similar rules, the only different thing from matrix is that now you need three dimensional coordinates to subset the ones we want. 
+
+
+## Lists
+A list is a collection of objects.
+```{r}
+l1 <- list(1:3,
+"a",
+c(TRUE,FALSE,TRUE),
+c(1,2)
+)
+l1
+```
+```{r}
+str(l1)
+```
+Lists work differently from c(), as they can contain objects of different types. We can also assign names to the lists for each vector in the list:
+
+```{r}
+names(l1) <- c("a", "b", "c", "d")
+l1
+```
+### Subsetting a List
+
+There are two ways to subset a list, by the order (just like atomic vectors), or by the name. But if we are going to subset by the order, double bracket (\texttt{[[]]}) is needed. To subset the list by name, we can use a dollar sign \texttt{$}+name.
+```{r}
+l1[[1]]
+```
+```{r}
+l1$c
+```
+
+## Dataframe
+
+In data analysis, the lists that we frequently use are data frames and tibbles. Data frames are
+the lists to store the data for analysis.
+
+```{r}
+df1 <- data.frame(x = 1:3, y = c(TRUE,FALSE,FALSE))
+df1
+typeof(df1)
+```
+```{r}
+str(df1)
+```
+```{r}
+attributes(df1)
+```
+A dataframe can be converted to matrix, and it also works in the other direction:
+```{r}
+a <- matrix(1:9, nrow = 3)
+colnames(a) <- c("A", "B", "C")
+a
+is.data.frame(data.frame(a))
+is.matrix(a)
+```
+### Subsetting a dataframe
+
+Either use the same way as subsetting the matrix, or using the dollar sign followed by the name of the colum that we want:
+```{r}
+df_a <- data.frame(a)
+df_a$A
+df_a[1,]
+```
+We can also use the bracket combined with the column name to subset a dataframe:
+```{r}
+df_a["A"]
+```
+
+
+# Ackowledgement
+
+This teaching material is adapted from the previous material of this course made by \textcolor{blue}{\href{https://malfaro.netlify.app/}{Marcela Alfaro-Córdoba}} and \textcolor{blue}{\href{https://sites.google.com/view/shengjiang/home?authuser=0}{Sheng Jiang}}.
+
+
+
+
+
+
+
+
+
+
+
+

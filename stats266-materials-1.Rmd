@@ -1,0 +1,348 @@
+---
+title: "STATS 266 Handout - Introduction & Basics"
+author: "Qi Wang"
+date: "`r Sys.Date()`"
+output: 
+  pdf_document:
+    number_sections: true
+    toc: true
+    toc_depth: 2
+    latex_engine: xelatex
+fontsize: 11pt
+geometry: margin=1in
+
+header-includes: |
+  \usepackage{xcolor}
+  \usepackage{hyperref}
+  \hypersetup{
+    colorlinks=true,
+    linkcolor=black,       % Internal links (e.g., table of contents)
+    urlcolor=blue,         % External hyperlinks (change to your preferred color)
+    citecolor=red          % Citation links
+  }
+---
+\newpage
+
+# Introduction
+
+Welcome to **STATS 266: Introduction to R**. This handout provides an overview of R, including its installation, basic operations, and data handling capabilities. By the end of this document, you should be able to:
+\begin{itemize}
+  \item Understand the purpose of R and RStudio.
+  \item Install and set up R for your coursework.
+  \item Learn basic R syntax, project managements.
+\end{itemize}
+
+## Installing R
+
+**R** is a programming language specifically designed for **statistical computing, data analysis, and visualization**. It is widely used in academia, research, and industry.
+R is:
+\begin{itemize}
+  \item Open-source and free to use.
+  \item Strong statistical capabilities with built-in functions.
+  \item Data visualization tools like `ggplot2`.
+  \item Extensive community support with thousands of packages available on CRAN.
+\end{itemize}
+
+
+Installing R：
+To install **R**, follow these steps:
+
+\begin{itemize}
+  \item Visit the \textcolor{blue}{\href{https://cran.r-project.org/}{CRAN website}}.
+  \item Select your operating system (Windows / macOS / Linux).
+  \item Download and install the latest version.
+\end{itemize}
+
+
+Find **R** on your computer and open it, it shows like:
+
+```{r echo=FALSE,out.width="80%",fig.align='center'}
+knitr::include_graphics(here::here("./pics/Rpic.jpg"))
+```
+
+
+## Installing RStudio
+RStudio is an **Integrated Development Environment (IDE)** for R that provides:
+\begin{itemize}
+  \item A user-friendly interface.
+  \item Code organization tools.
+  \item An embedded console and visualization panel.
+\end{itemize}
+
+Installation Steps:
+\begin{itemize}
+  \item Visit \textcolor{blue}{\href{https://posit.co/download/rstudio-desktop/}{RStudio Download Page}}
+  \item Choose your operating system and download RStudio Desktop.
+  \item Install and open RStudio.
+\end{itemize}
+
+\textcolor{red}{Warning: You will need to install R before installing RStudio.}
+
+
+## RStudio Interface Overview
+After opening **RStudio**, you will see four main panels:
+\begin{itemize}
+  \item Console: Where you enter R commands.
+  \item Environment/History: Displays variables and past commands.
+  \item Files/Plots/Packages: Manages files, plots, and installed packages.
+  \item Script Editor: Write and save R scripts (`.R` files).
+\end{itemize}
+
+```{r echo=FALSE,out.width="80%",fig.align='center'}
+knitr::include_graphics(here::here("./pics/RS.jpg"))
+```
+
+
+# Basic R Commands
+
+## Using R as a calculator
+R is a computer language for scientific computing, so we can use it as a calculator.
+```{r}
+(10+23-45)/6^7
+```
+What does $e-05$ mean? It actually means $10^{-5}$. By writing in this way, the result is easier to read. In all,
+\begin{itemize}
+  \item plus: +
+  \item minus: -
+  \item times: *
+  \item divide: /
+  \item logarithm: log()
+  \item exponentiation: exp()
+  \item sine, cosine, tangent: sin(), cos(), tan()
+\end{itemize}
+
+Some more operations:
+\begin{itemize}
+  \item modulo: \%\%
+  \item absolute value: abs()
+  \item round: round()
+  \item round up: ceilling()
+  \item round down: floor()
+\end{itemize}
+
+```{r}
+print(c(5%%2,abs(-5),round(1/3),ceiling(3/4),floor(3/4)))
+```
+Take \texttt{abs()} as an example—this differs from simple arithmetic operations. In R, such constructs are called \textbf{functions}. We will explore how to write functions in detail later. Similar to mathematical functions, a function in R takes an input, processes it, and returns an output. In this case, \texttt{abs()} takes a number as input and returns its absolute value. Later in this course, you will learn how to write your own custom functions. For now, if you don't know how to use some function, just type ? in front of the function. For example:
+```{r}
+?abs()
+```
+You will see what arguments it needs, and what values it outputs.
+
+## Assign Values
+
+We definitely want to use some symbols to represent the values, that improves the readability of the code. We use "<-" or "=". See the following example:
+
+```{r}
+x <- 0.5
+y = log(x)
+print(c(x, log(x), log(0.5)))
+print(c(y, exp(y), exp(log(0.5)) ))
+```
+\textcolor{blue}{Note: <- is generally recommended since it indicates the direction.}
+
+So if we want to repetitively use the value, we had better assign it to some variable, and it will be saved for future use. However, not all names are legal for variables:
+\begin{itemize}
+  \item Variable names can contain letters, numbers, underscores and periods but no spaces.
+  \item They must start with a letter or a period followed by a letter (they cannot start with a number nor an underscore).
+  \item Variables beginning with a period are hidden variables.
+\end{itemize}
+
+
+Different people use different conventions for long variable names, these include:
+
+\begin{itemize}
+  \item periods.between.words (Sometimes mess up with Python!)
+  \item underscores\_between\_words (My personal recommendation.)
+  \item camelCaseToSeparateWords (Hard to read!)
+\end{itemize}
+\begin{itemize}
+  \item periods.between.words (Sometimes mess up with Python!)
+  \item underscores\_between\_words (My personal recommendation.)
+  \item camelCaseToSeparateWords (Hard to read!)
+\end{itemize}
+
+Exercise: Which of the following are valid R variable names?
+\begin{itemize}
+  \item min\_height (Y)
+  \item max.height (Y)
+  \item \_age
+  \item .mass
+  \item MaxLength (Y)
+  \item min-length
+  \item 2widths
+  \item celsius2kelvin (Y)
+\end{itemize}
+
+\textcolor{red}{Warning: Some dangerous assigning will cause trouble.}
+```{r}
+print(c(pi,sin(pi/6)))
+```
+```{r}
+pi <- 2
+print(c(pi,sin(pi/6)))
+```
+Avoid assigning values to names that conflict with built-in variables or functions. This applies to variables, functions, and data frames. Additionally, when using packages, be mindful that your variable names do not coincide with function or object names within those packages. This is dangerous because although it will not report a bug, your future experiential result could be affected.
+
+
+## Logical Operations with R
+
+We can also do comparisons in R, there are some logical operators:
+```{r}
+print(c(1==1,1==2))
+print(c(1>2,1<2))
+print(c(1>2 & 1<2))
+print(c(1>2 | 1<2))
+```
+\begin{itemize}
+  \item and: \&
+  \item or: |
+  \item compares: >,<,==,>=,<=,!=
+\end{itemize}
+
+Logical values in R has 0 (FALSE) or 1 (TRUE) values.
+
+
+# Vectorization
+
+One final thing to be aware of is that R is vectorized, meaning that variables and functions can have vectors as values. In contrast to physics and mathematics, a vector in R describes a set of values in a certain order of the same data type. For example:
+```{r}
+print(c(1:5))
+```
+```{r}
+print(c(1:5) - c(6:10))
+```
+```{r}
+print(2^(1:5))
+```
+# Remove a variable
+There are sometimes after you assign values to a variable, you want to remove it from the environment to save the RAM:
+```{r}
+x <- 1 # See the "Environment" panel in RStudio
+rm(x) # Check the "Environment" panel in RStudio again
+```
+
+One important thing is to remove all variables before running a session:
+```{r}
+rm(list = ls())
+```
+
+# Project Management
+
+We’re going to create a new project in RStudio:
+
+\begin{enumerate}
+  \item Click the \textbf{“File”} menu button, then \textbf{“New Project”}.
+  \item Click \textbf{“New Directory”}.
+  \item Click \textbf{“New Project”}.
+  \item Type in the name of the directory to store your project, e.g., \texttt{my\_project}.
+  \item If available, select the checkbox for \textbf{“Create a git repository.”}
+  \item Click the \textbf{“Create Project”} button.
+\end{enumerate}
+
+Sometimes, we need to read some data into R to make further analysis. To begin, we need to know, where we are now:
+```{r}
+getwd()
+```
+We can also set a new path to work at:
+```{r}
+setwd("./")
+```
+
+
+By making a project, we can assign data together with the code and use some functions to read data under the file path of the project.
+
+```{r}
+here::here()
+```
+# Version Control - GitHub 
+
+This part of materials are from https://happygitwithr.com/rstudio-git-github.
+
+## Prerequisites
+
+Ensure you have:
+
+\begin{itemize}
+  \item A registered free GitHub account.
+  \item Installed or updated R and RStudio.
+  \item Installed Git on your system.
+  \item Configured Git with your username and email.
+  \item Verified the ability to push to and pull from GitHub via the command line.
+\end{itemize}
+
+## Create a Repository on GitHub
+
+\begin{enumerate}
+  \item Log in to your GitHub account.
+  \item Click the "New" button near "Repositories" to create a new repository.
+  \item Fill in the repository details:
+    \begin{itemize}
+      \item Repository name: e.g., \texttt{myrepo}
+      \item Description: "Repository for testing my Git/GitHub setup"
+      \item Public: Select this option.
+      \item Initialize this repository with**: Add a README file.
+    \end{itemize}
+  \item Click "Create repository".
+  \item Click the "Code" button and copy the repository's HTTPS URL.
+\end{enumerate}
+
+## Clone the Repository in RStudio
+
+\begin{enumerate}
+  \item Open RStudio.
+  \item Go to File, New Project, Version Control, Git.
+  \item In the "Repository URL" field, paste the copied URL from GitHub.
+  \item Specify the local directory where you want to store the project.
+  \item Click "Create Project".
+\end{enumerate}
+
+## Make Local Changes and Commit
+
+\begin{enumerate}
+  \item In RStudio's Files pane, open \texttt{README.md}.
+  \item Add a line, e.g., \texttt{This is a line from RStudio.}
+  \item Save the file.
+  \item Click the "Git" tab.
+  \item Stage the \texttt{README.md} file by checking its box.
+  \item Click "Commit".
+  \item Enter a commit message, e.g., \texttt{"Commit from RStudio."}
+  \item Click "Commit."
+\end{enumerate}
+
+## Push Changes to GitHub
+
+\begin{enumerate}
+  \item In the Git tab, click "Push" to upload your commit to GitHub.
+  \item If prompted, enter your GitHub credentials.
+\end{enumerate}
+
+## Verify Changes on GitHub
+
+\begin{enumerate}
+  \item Navigate to your GitHub repository in a web browser.
+  \item Confirm that the changes to \texttt{README.md} appear in your repository.
+\end{enumerate}
+
+## Additional Resources
+
+For more details, refer to:  
+\textcolor{blue}{\href{https://happygitwithr.com/rstudio-git-github.html}{Happy Git and GitHub for the useR}}
+
+
+
+# Ackowledgement
+
+This teaching material is adapted from the previous material of this course made by \textcolor{blue}{\href{https://malfaro.netlify.app/}{Marcela Alfaro-Córdoba}} and \textcolor{blue}{\href{https://sites.google.com/view/shengjiang/home?authuser=0}{Sheng Jiang}}.
+
+
+
+
+
+
+
+
+
+
+
+
