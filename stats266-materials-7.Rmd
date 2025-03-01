@@ -1,0 +1,195 @@
+---
+title: "STATS 266 Handout - Rmarkdown and LaTeX"
+author: "Qi Wang"
+date: "`r Sys.Date()`"
+output: 
+  pdf_document:
+    number_sections: true
+    toc: true
+    toc_depth: 2
+    latex_engine: xelatex
+fontsize: 11pt
+geometry: margin=1in
+
+header-includes: |
+  \usepackage{xcolor}
+  \usepackage{hyperref}
+  \hypersetup{
+    colorlinks=true,
+    linkcolor=black,       % Internal links (e.g., table of contents)
+    urlcolor=blue,         % External hyperlinks (change to your preferred color)
+    citecolor=red          % Citation links
+  }
+---
+\newpage
+
+# Introduction
+
+Welcome to **STATS 266: Introduction to R**. This handout provides an introduction about writing reports with Rmarkdown. **RMarkdown** is a powerful tool for creating **reproducible reports** that combine **text, R code, and output** (tables, plots, equations).By the end of this document, you should be able to:
+\begin{itemize}
+    \item Formatting text in RMarkdown
+    \item Adding code chunks and executing R code
+    \item Creating tables and plots
+    \item Writing mathematical equations using LaTeX
+\end{itemize}
+
+For this part, valuable materials to refer to include \textcolor{blue}{https://rmarkdown.rstudio.com/lesson-1.html} and \textcolor{blue}{https://ourcodingclub.github.io/tutorials/rmarkdown/}.
+
+# Formatting Text in RMarkdown
+
+## Headers
+Use `#` for **headers**:
+```md
+# Header 1
+## Header 2
+### Header 3
+```
+output:
+
+# Header 1
+
+## Header 2
+
+### Header 3
+
+## Bold, Italic and Inline Code
+```md
+- **Bold** : **text**
+- *Italic* : *text*
+- `Inline Code` : `x <- 10`
+```
+- **Bold** : **text**
+- *Italic* : *text*
+- `Inline Code` : `x <- 10`
+
+## List
+```md
+- Item 1
+- Item 2
+  - Sub-item 2.1
+  - Sub-item 2.2
+```
+Output: 
+
+- Item 1
+- Item 2
+  - Sub-item 2.1
+  - Sub-item 2.2
+  
+# Adding Code Chunks
+In RMarkdown, R code is placed inside code chunks:
+```{r}
+# Sample R code
+x <- rnorm(100)  # Generate 100 random numbers
+mean(x)          # Compute mean
+```
+You can click the button:
+```{r}
+knitr::include_graphics(here::here("./pics/rmd.jpg"))
+```
+Or just input three '`' and finish the chunk with another three. 
+
+# Code Chunk Options
+
+You can modify how code chunks behave by using chunk options:
+```{r echo=FALSE}
+# This code will run but not be shown in the output
+x <- rnorm(100)
+summary(x)
+```
+the argument echo means whether the code will exist in the final pdf/html that you knit. Of course, you can put ggplots in the R chunk and make some plots in the final documents. You can also makes slides with Rmarkdown. Refer to:https://rmarkdown.rstudio.com/lesson-11.html. 
+
+# Include a Picture
+As simple as using an R chunk
+```{r}
+#knitr::include_graphics("path/to/your/jpg")
+```
+In the chunk options you will be able to modify the size of the figures, alignment of the figures, too. 
+
+# Include a Table
+```{r}
+library(knitr)
+kable(head(mtcars), caption = "Table of `mtcars` Data")
+```
+
+# Latex Equations
+
+A big advantage of Rmarkdown is that it's perfectly integrated to write equations in the Latex. Begin with dollar signs:
+$$
+\beta_1 = \frac{\sum (X_i - \bar{X})(Y_i - \bar{Y})}{\sum (X_i - \bar{X})^2}
+$$
+Refer to: https://www.bu.edu/math/files/2013/08/LongTeX1.pdf for a summary of commonly used Latex commands.
+
+# Rendering RMarkdown to Different Formats
+
+You can convert .Rmd files to different formats:
+
+- HTML: output: html_document
+- PDF : output: pdf_document
+- Word : output: word_document
+
+You can simply click the ``knit" to render your file:
+```{r}
+knitr::include_graphics(here::here("./pics/knit.jpg"))
+```
+
+
+
+
+Note: If you want to knit to a pdf document, it sometimes report weird bugs. Most of the time it can be solved via installing the tinytex and use the xelatex engine. Remember, the yaml of the file can be revised to adjust the format of the files.
+
+```{r out.width="60%"}
+knitr::include_graphics(here::here("./pics/yaml.jpg"))
+```
+
+## More in PDF
+
+I believe most of you are solely interested in knitting to PDF since you can write a paper, or submit a homework in this format. Let me talk more about it.
+
+### Install TinyTeX (If not installed)
+```{r}
+# install.packages("tinytex")
+# tinytex::install_tinytex()
+```
+I commented it since I don't need, but when you run this code, get rid of ``#".
+
+### Modify the yaml
+```md
+---
+title: "My Document"
+author: "Your Name"
+date: "`r Sys.Date()`"
+output: 
+  pdf_document:
+    latex_engine: xelatex
+fontsize: 12pt
+mainfont: "Times New Roman"
+---
+```
+The most important part is the output part, based on the pdf\_document, now we have another argument, latex engine. Choose that to be xelatex. If you want to include latex packages add:
+```md
+header-includes:
+  - \usepackage{graphicx}
+  - \usepackage{amsmath}
+```
+to the yaml. Refer to: https://bookdown.org/yihui/rmarkdown-cookbook/latex-extra.html. 
+
+# More..
+
+Remember, when writing a paper including many equations, latex is my personal recommendation. It's is a powerful paper tools that can include professional looking paper. Usually, the journal will provide some template files, and you can work directly on the template. There is also an online LaTeX editor known as Overleaf, where collaborators can work together on writing a document. Refer to: https://www.overleaf.com/learn/latex/Tutorials for more information of Overleaf. I strongly recommend getting used to this online writing tool.
+
+# Ackowledgement
+
+This teaching material is adapted from the previous material of this course made by \textcolor{blue}{\href{https://malfaro.netlify.app/}{Marcela Alfaro-Córdoba}} and \textcolor{blue}{\href{https://sites.google.com/view/shengjiang/home?authuser=0}{Sheng Jiang}}.
+
+
+
+
+
+
+
+
+
+
+
+

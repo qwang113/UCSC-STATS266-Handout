@@ -1,0 +1,350 @@
+---
+title: "STATS 266 Handout - Linear Regression"
+author: "Qi Wang"
+date: "`r Sys.Date()`"
+output: 
+  pdf_document:
+    number_sections: true
+    toc: true
+    toc_depth: 2
+    latex_engine: xelatex
+fontsize: 11pt
+geometry: margin=1in
+
+header-includes: |
+  \usepackage{xcolor}
+  \usepackage{hyperref}
+  \hypersetup{
+    colorlinks=true,
+    linkcolor=black,       % Internal links (e.g., table of contents)
+    urlcolor=blue,         % External hyperlinks (change to your preferred color)
+    citecolor=red          % Citation links
+  }
+---
+\newpage
+
+# Introduction
+
+Welcome to **STATS 266: Introduction to R**. This handout provides an introduction about linear regression in R. Linear regression is a fundamental statistical technique used for modeling the relationship between a dependent variable and one or more independent variables. By the end of this document, you should be able to:
+\begin{itemize}
+    \item understand the mathematical formulation of linear regression
+    \item estimate regression coefficients using the least squares method
+    \item implement a linear regression in R
+    \item do model diagnostics and evaluation
+\end{itemize}
+
+For this part, valuable materials to refer to include \textcolor{blue}{https://www.geeksforgeeks.org/ml-linear-regression/} and \textcolor{blue}{https://malfaro2.github.io/stat266A/lectures/EDA+REG.html}.
+
+# Mathematical Formulation
+
+A simple linear regression model is defined as:
+\begin{equation}
+    Y = \beta_0 + \beta_1 X + \epsilon
+\end{equation}
+where:
+\begin{itemize}
+    \item \( Y \) is the dependent variable (response)
+    \item \( X \) is the independent variable (predictor)
+    \item \( \beta_0 \) is the intercept
+    \item \( \beta_1 \) is the slope (effect of \( X \) on \( Y \))
+    \item \( \epsilon \) is the error term, assumed to be normally distributed: \( \epsilon \sim N(0, \sigma^2) \)
+\end{itemize}
+
+For multiple linear regression, we extend this to:
+\begin{equation}
+    Y = \beta_0 + \beta_1 X_1 + \beta_2 X_2 + \dots + \beta_p X_p + \epsilon
+\end{equation}
+where there are \( p \) predictor variables.
+
+In this setting, $X$ and $Y$ are observed data, the other $\beta_\cdot$ are parameters to be estimate. We also need to estimate the $\sigma^2$ in the normal assumption of the $\epsilon$.
+
+# Ordinary Least Squares (OLS)
+Take simple linear regression as an example, where we only have intercept and one covariate. The **Ordinary Least Squares (OLS)** method estimates \( \beta \) by minimizing the sum of squared residuals:
+\begin{equation}
+    S(\beta) = \sum_{i=1}^{n} (Y_i - \beta_0 - \beta_1 X_i)^2
+\end{equation}
+
+Remember the only unknown parameter is $\beta$, so the SSE, which can be understood as a loss function here, is a function about $\beta$. We need to find which value of $\beta$ lead to the smallest SSE. But how can we find it?
+
+## Taking the Derivatives
+
+## Derivatives of $\beta_0$
+
+\begin{equation}
+    \frac{\partial S}{\partial \beta_0} = \sum_{i=1}^{n} 2 \left( Y_i - \beta_0 - \beta_1 X_i \right) (-1).
+\end{equation}
+Setting this derivative to zero:
+\begin{equation}
+    \sum_{i=1}^{n} (Y_i - \beta_0 - \beta_1 X_i) = 0.
+\end{equation}
+Rearrange:
+\begin{equation}
+    \sum_{i=1}^{n} Y_i = n\beta_0 + \beta_1 \sum_{i=1}^{n} X_i.
+\end{equation}
+Dividing by \( n \), we get:
+\begin{equation}
+    \hat{\beta_0} = \bar{Y} - \hat{\beta_1} \bar{X}.
+\end{equation}
+
+## Derivatives of $\beta_1$
+
+\begin{equation}
+    \frac{\partial S}{\partial \beta_1} = \sum_{i=1}^{n} 2 \left( Y_i - \beta_0 - \beta_1 X_i \right) (-X_i).
+\end{equation}
+Setting this derivative to zero:
+\begin{equation}
+    \sum_{i=1}^{n} X_i (Y_i - \beta_0 - \beta_1 X_i) = 0.
+\end{equation}
+Expanding:
+\begin{equation}
+    \sum_{i=1}^{n} X_i Y_i - \beta_0 \sum_{i=1}^{n} X_i - \beta_1 \sum_{i=1}^{n} X_i^2 = 0.
+\end{equation}
+Substituting \( \hat{\beta_0} = \bar{Y} - \hat{\beta_1} \bar{X} \):
+\begin{equation}
+    \sum_{i=1}^{n} X_i Y_i - (\bar{Y} - \hat{\beta_1} \bar{X}) \sum_{i=1}^{n} X_i - \hat{\beta_1} \sum_{i=1}^{n} X_i^2 = 0.
+\end{equation}
+Simplifying:
+\begin{equation}
+    \sum_{i=1}^{n} X_i Y_i - \bar{Y} \sum_{i=1}^{n} X_i + \hat{\beta_1} \bar{X} \sum_{i=1}^{n} X_i - \hat{\beta_1} \sum_{i=1}^{n} X_i^2 = 0.
+\end{equation}
+Rearrange to solve for \( \hat{\beta_1} \):
+\begin{equation}
+    \hat{\beta_1} = \frac{\sum_{i=1}^{n} (X_i - \bar{X})(Y_i - \bar{Y})}{\sum_{i=1}^{n} (X_i - \bar{X})^2}.
+\end{equation}
+
+## Other Cases
+
+In a general case, for multiple regression, the model is:
+\begin{equation}
+    Y = X \beta + \epsilon,
+\end{equation}
+where:
+\begin{itemize}
+    \item \( Y \) is an \( n \times 1 \) response vector,
+    \item \( X \) is an \( n \times (p+1) \) matrix including predictors and intercept column,
+    \item \( \beta \) is a \( (p+1) \times 1 \) coefficient vector,
+    \item \( \epsilon \) is an \( n \times 1 \) error vector.
+\end{itemize}
+The expression of the regression coefficient in a linear regression is in a closed form. The OLS estimates are obtained by solving:
+\begin{equation}
+    \hat{\beta} = (X^T X)^{-1} X^T Y
+\end{equation}
+In this equation, $X$ is a $n\times p$ matrix, where $n$ is the number of observations, and $p$ is the number of covariates (including intercept). The length $n$ column vector $Y$ is the corresponding response variable.
+
+# Implementing in R
+
+Let's fit a simple linear regression model using R.
+
+## Simulating the Data
+```{r}
+# Simulated dataset
+set.seed(123)
+x <- rnorm(100, mean = 50, sd = 10)  # Predictor
+y <- 5 + 2*x + rnorm(100, sd = 5)  # Response with noise
+data <- data.frame(x, y)
+
+# Scatterplot of the data
+library(ggplot2)
+ggplot(data, aes(x = x, y = y)) +
+    geom_point() +
+    labs(title = "Scatterplot of Data", x = "X", y = "Y") +
+    theme_minimal()
+```
+
+## Fitting a Linear Model
+```{r}
+# Fit a linear regression model
+model <- lm(y ~ x, data = data)
+
+# Summary of the model
+summary(model)
+```
+The function \texttt{lm()} is for linear regression, $y\sim x$ means the response variable is $y$ and the covariates are $x$.
+
+## Interpreting the Output
+
+We see a lot information from summarizing the model:
+
+The `summary(model)` function provides:
+\begin{itemize}
+    \item Coefficients: Estimates of \( \beta_0 \) (Intercept) and \( \beta_1 \) (Slope)
+    \item R-squared: Measure of model fit (closer to 1 means better fit)
+    \item p-value: Tests if predictors significantly explain variation in \( Y \)
+\end{itemize}
+
+Given the estimated model:
+
+\[
+\hat{Y} = \hat{\beta_0} + \hat{\beta_1} X
+\]
+
+- Intercept interpretation: The \textbf{predicted} value of \( Y \) when \( X = 0 \).
+- Slope interpretation: The \textbf{expected} change in \( Y \) for each additional unit of \( X \).
+
+# Model Diagnostics
+Model diagnostics help evaluate the \textbf{validity} of a linear regression model by checking key \textbf{assumptions}. Ensuring these assumptions hold improves the reliability of predictions and inferences. The primary diagnostics include linearity, homoscedasticity, normality, multicollinearity, and outliers. Each of these assumptions must be checked to ensure that the linear regression model provides valid and meaningful results. Let's talk about them one by one. To begin, we still use mtcars as an example, we use mpg to be the response variable, ht, and wt to be the covariates.
+
+```{r warning=FALSE}
+# Load necessary libraries
+library(ggplot2)
+library(car)   # For VIF and diagnostics
+library(dplyr) # For data manipulation
+
+data(mtcars)
+model <- lm(mpg ~ hp + wt, data = mtcars)
+summary(model)
+```
+
+## Linearity
+The relationship between the dependent variable and independent variables should be linear. If the relationship is nonlinear, applying transformations (e.g., logarithmic or polynomial terms) might be necessary. In our example, the relationship between mpg and the predictors (hp, wt) should be linear. We use scatter plots to visualize the relationships.
+```{r}
+ggplot(mtcars, aes(x = hp, y = mpg)) +
+  geom_point() +
+  geom_smooth(method = "lm", color = "red", se = FALSE) +
+  labs(title = "MPG vs HP with Linear Fit")
+
+ggplot(mtcars, aes(x = wt, y = mpg)) +
+  geom_point() +
+  geom_smooth(method = "lm", color = "blue", se = FALSE) +
+  labs(title = "MPG vs WT with Linear Fit")
+```
+Note that the geom\_smooth() function in ggplot2 is used to add a smoothed trend line to a plot, typically applied to scatter plots to visualize trends in the data. If the red or blue regression lines do not fit well, non-linearity may exist.
+If non-linearity is detected, transformations such as logarithm (log()), polynomial (poly()) terms, or splines may be needed.
+
+    
+## Homoscedasticity
+The variance of residuals should be constant across all levels of the independent variable. If residuals exhibit increasing or decreasing spread (heteroscedasticity), weighted regression or transformations can help. In other words, residuals should have constant variance across fitted values. A Residuals vs Fitted plot helps detect heteroscedasticity.
+
+```{r warning=FALSE}
+library(ggplot2)
+
+# Extract fitted values and residuals
+residuals_df <- data.frame(
+  fitted = fitted(model),
+  residuals = residuals(model)
+)
+
+# Create Residuals vs Fitted Plot
+ggplot(residuals_df, aes(x = fitted, y = residuals)) +
+  geom_point(color = "blue", alpha = 0.7) +  # Scatterplot of residuals
+  geom_hline(yintercept = 0, linetype = "dashed", color = "red", size = 1) +  # Reference line at zero
+  labs(
+    title = "Residuals vs Fitted Values",
+    x = "Fitted Values",
+    y = "Residuals"
+  ) +
+  theme_minimal()
+
+```
+The residuals should be randomly scattered without patterns. If residuals fan out (increasing variance), heteroscedasticity is present.
+Possible solutions include applying log transformation to mpg (e.g., log(mpg) ~ hp + wt), or using weighted least squares (https://en.wikipedia.org/wiki/Weighted_least_squares) regression.
+    
+## Normality of Residuals
+
+The residuals should be normally distributed to ensure valid hypothesis testing. This can be checked with a Q-Q plot or histogram. If residuals are not normal, using robust regression or bootstrapping may be useful. We can use either histogram or Q-Q plot:
+
+```{r}
+# Compute residuals
+residuals_df <- data.frame(residuals = residuals(model))
+
+# Histogram of residuals using ggplot2
+ggplot(residuals_df, aes(x = residuals)) +
+  geom_histogram(fill = "lightblue", color = "black", bins = 10) +
+  labs(title = "Histogram of Residuals", x = "Residuals", y = "Frequency") +
+  theme_minimal()
+```
+
+```{r}
+# Q-Q plot using ggplot2
+ggplot(residuals_df, aes(sample = residuals)) +
+  stat_qq() +
+  stat_qq_line(color = "red") +
+  labs(title = "Q-Q Plot of Residuals", x = "Theoretical Quantiles", y = "Sample Quantiles") +
+  theme_minimal()
+```
+
+If residuals deviate strongly from the red line in the Q-Q plot, they may not be normally distributed. If the histogram is skewed, transformations like log() or sqrt() may help.
+
+
+    
+## Multicollinearity
+Predictor variables should not be highly correlated, as multicollinearity can distort coefficient estimates and make interpretation difficult. The Variance Inflation Factor (VIF) is commonly used to detect multicollinearity, and variables with a VIF greater than 5 should be reconsidered.
+```{r}
+# Compute Variance Inflation Factor (VIF)
+vif_values <- vif(model)
+vif_values
+```
+Interpretation of VIF:
+General guidelines for interpreting VIF values:
+
+- VIF < 5: No serious multicollinearity.
+- VIF > 5: Multicollinearity is concerning.
+- VIF > 10: Severe multicollinearity—consider removing or combining variables.
+
+If VIF > 5, multicollinearity may be problematic, affecting the interpretability and stability of regression coefficients. If multicollinearity is present, consider these approaches:
+
+- Remove one of the correlated predictors if they provide redundant information.
+- Use Principal Component Regression (PCR) to transform predictors into uncorrelated components.
+- Combine highly correlated predictors (e.g., averaging two related variables).
+
+
+    
+## Outliers and Influential Points
+Extreme values can disproportionately impact the regression model. Cook’s Distance and leverage statistics help identify these points, and they may need to be investigated or removed based on domain knowledge. Cook's Distance for an observation \( i \) is defined as:
+
+\[
+D_i = \frac{\sum_{j=1}^{n} (\hat{Y}_{j(i)} - \hat{Y}_j)^2}{p \cdot MSE}
+\]
+
+where:
+
+- \( \hat{Y}_j \) is the predicted value for observation \( j \).
+- \( \hat{Y}_{j(i)} \) is the predicted value when the \( i \)-th observation is removed.
+- \( p \) is the number of predictors.
+- \( MSE \) is the mean squared error of the model.
+
+An observation is considered **influential** if its **Cook’s Distance is greater than**:
+
+\[
+\frac{4}{n - p - 2}
+\]
+
+where:
+
+- \( n \) is the number of observations.
+- \( p \) is the number of predictors.
+
+```{r}
+# Compute Cook's Distance
+cooks_dist <- cooks.distance(model)
+
+# Find threshold for influential points
+threshold <- 4 / (nrow(mtcars) - length(coef(model)) - 2)
+
+# Identify influential points
+influential_points <- which(cooks_dist > threshold)
+
+# Print influential points
+mtcars[influential_points, ]
+```
+These points should be carefully examined to see if they are errors, outliers, or legitimate values.
+
+
+
+
+
+# Ackowledgement
+
+This teaching material is adapted from the previous material of this course made by \textcolor{blue}{\href{https://malfaro.netlify.app/}{Marcela Alfaro-Córdoba}} and \textcolor{blue}{\href{https://sites.google.com/view/shengjiang/home?authuser=0}{Sheng Jiang}}.
+
+
+
+
+
+
+
+
+
+
+
+
