@@ -1,0 +1,163 @@
+---
+title: "STATS 266 Handout - Functions"
+author: "Qi Wang"
+date: "`r Sys.Date()`"
+output: 
+  pdf_document:
+    number_sections: true
+    toc: true
+    toc_depth: 2
+    latex_engine: xelatex
+fontsize: 11pt
+geometry: margin=1in
+
+header-includes: |
+  \usepackage{xcolor}
+  \usepackage{hyperref}
+  \hypersetup{
+    colorlinks=true,
+    linkcolor=black,       % Internal links (e.g., table of contents)
+    urlcolor=blue,         % External hyperlinks (change to your preferred color)
+    citecolor=red          % Citation links
+  }
+---
+\newpage
+
+# Introduction
+
+Welcome to **STATS 266: Introduction to R**. This handout provides an introduction about functions in R. By the end of this document, you should be able to:
+\begin{itemize}
+  \item Define a function that takes arguments.
+  \item Return a value from a function.
+  \item Check argument conditions with stopifnot() in functions.
+  \item Test a function.
+  \item Set default values for function arguments.
+  \item Explain why we should divide programs into small, single-purpose functions.
+\end{itemize}
+For this part, valuable materials to refer to include \textcolor{blue}{https://www.dataquest.io/blog/write-functions-in-r/} and \textcolor{blue}{https://swcarpentry.github.io/r-novice-gapminder/10-functions.html}.
+
+# Definition of Functions
+
+Functions gather a sequence of operations into a whole, preserving it for ongoing use. Functions provide:
+\begin{itemize}
+  \item a name we can remember and invoke it by
+  \item relief from the need to remember the individual operations
+  \item a defined set of inputs and expected outputs
+  \item rich connections to the larger programming environment
+\end{itemize}
+
+
+As the basic building block of most programming languages, user-defined functions constitute ``programming" as much as any single abstraction can. If you have written a function, you are a computer programmer. The basic format of a function looks like this:
+```{r}
+my_function <- function(parameters) {
+  # perform action
+  # return value
+}
+```
+For example, if we want to create a function that transform the Fahrenheit to Kelvin, in a mathematical function, we use:
+$$K = \frac{(F-32)\times 5}{9}+273.15$$. In an R function:
+
+```{r}
+fahr_to_kelvin <- function(temp) {
+  kelvin <- ((temp - 32) * (5 / 9)) + 273.15
+  return(kelvin)
+}
+fahr_to_kelvin(95)
+```
+In this function, \texttt{temp} is the input argument, the part inside \{\} is the main body of the function. One of the most important thing is the \texttt{return()} here, which tells the computer which argument will it return to you, i.e., which variable is the output of the function.
+# Set Default Values
+
+As we see from the previous function, if we don't specify a value for the argument, the function will return an error. However, we can set the default values for the argument of the function.
+
+```{r}
+fahr_to_kelvin <- function(temp = 95) {
+  kelvin <- ((temp - 32) * (5 / 9)) + 273.15
+  return(kelvin)
+}
+fahr_to_kelvin()
+```
+For the previous example, we set the default value of the \texttt{temp} to be 95. Therefore, although we didn't specify the value of \texttt{temp} when we use the function, it takes 95 as its default value.
+
+# Loop and Function
+
+We use function typically to reduce repetitive coding chunks. Therefore, there are some cases that we need to put loop inside a function. For example, let's write a function to calculate the row sums of a matrix:
+```{r}
+row_sum <- function(mat){
+  d1 <- nrow(mat)
+  d2 <- ncol(mat)
+  result <- rep(0, d1)
+  for (i in 1:d1) {
+    for(j in 1:d2){
+      result[i] <- result[i] + mat[i,j]
+    }
+  }
+  return(result)
+}
+M <- matrix(1:16,4,4)
+row_sum(M)
+rowSums(M)
+```
+Note: Please be always careful even when you don't use a function, why do I define d1 and d2? Since if we change the input, the dimensions will also change. These types of code will not be sensitive to the input, and further will be more adaptive. Take this example:
+```{r}
+M <- matrix(1:16,4,4)
+result <- rep(0, 4)
+  for (i in 1:4) {
+    for(j in 1:4){
+      result[i] <- result[i] + M[i,j]
+    }
+  }
+result
+```
+The previous code is correct, but not so adaptive:
+```{r}
+M <- matrix(1:25,5,5)
+result <- rep(0, 4)
+  for (i in 1:4) {
+    for(j in 1:4){
+      result[i] <- result[i] + M[i,j]
+    }
+  }
+result
+rowSums(M)
+```
+The return of the previous code is definitely not what we want, because when we change the dimension of the matrix, we also need to change the loop index and the result length. That would be too complicated when we have a long program. Therefore, avoid using detailed information about data, instead, define some argument to bring in the information of the data.
+
+# Composite Functions
+
+We can take the output of one function as the input of another function. In math, it's like $f(g(x))$. Let's make an example:
+```{r}
+fahr_to_kelvin <- function(temp) {
+  kelvin <- ((temp - 32) * (5 / 9)) + 273.15
+  return(kelvin)
+}
+
+kelvin_to_celsius <- function(temp) {
+  celsius <- temp - 273.15
+  return(celsius)
+}
+```
+What if we want to transform the temperature from Fahrenheit to Celsius? We first transform the temperature from Fahrenheit to Kelvin and then from Kelvin to Celsius:
+```{r}
+fahr_to_kelvin(95)
+kelvin_to_celsius(fahr_to_kelvin(95))
+```
+For more technical details about a function, refer to: https://drive.google.com/file/d/1fA1d_G0-w2UsODAbRB6EIJ6zzapJKXod/view. This course is an introduction level of basic R skills, and will move to data visualization quickly.
+
+
+
+
+# Ackowledgement
+
+This teaching material is adapted from the previous material of this course made by \textcolor{blue}{\href{https://malfaro.netlify.app/}{Marcela Alfaro-Córdoba}} and \textcolor{blue}{\href{https://sites.google.com/view/shengjiang/home?authuser=0}{Sheng Jiang}}.
+
+
+
+
+
+
+
+
+
+
+
+
