@@ -1,5 +1,5 @@
 ---
-title: "STATS 266 Handout - Control Flow and Functions"
+title: "STATS 266 Handout - Control Flow"
 author: "Qi Wang"
 date: "`r Sys.Date()`"
 output: 
