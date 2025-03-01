@@ -1,0 +1,219 @@
+---
+title: "STATS 266 Handout - Control Flow and Functions"
+author: "Qi Wang"
+date: "`r Sys.Date()`"
+output: 
+  pdf_document:
+    number_sections: true
+    toc: true
+    toc_depth: 2
+    latex_engine: xelatex
+fontsize: 11pt
+geometry: margin=1in
+
+header-includes: |
+  \usepackage{xcolor}
+  \usepackage{hyperref}
+  \hypersetup{
+    colorlinks=true,
+    linkcolor=black,       % Internal links (e.g., table of contents)
+    urlcolor=blue,         % External hyperlinks (change to your preferred color)
+    citecolor=red          % Citation links
+  }
+---
+\newpage
+
+# Introduction
+
+Welcome to **STATS 266: Introduction to R**. This handout provides an introduction about control flow in R. By the end of this document, you should be able to:
+\begin{itemize}
+  \item Write conditional statements with if...else statements and ifelse().
+
+  \item Write and understand \texttt{for()} loops.
+  \item Write and understand \texttt{while()} loops.
+\end{itemize}
+For this part, valuable materials to refer to include \textcolor{blue}{https://www.datacamp.com/tutorial/tutorial-on-loops-in-r} and \textcolor{blue}{https://swcarpentry.github.io/r-novice-gapminder/07-control-flow.html}.
+
+# Choices/Conditions
+
+Sometimes, we want to run different codes under different conditions. For example, 
+```{r}
+x <- 1
+if(x > 0){
+  print("the variable x is positive")
+}
+```
+However, for the previous case, if x has a negative value, the condition in \texttt{if()} will not be satisfied, therefore the code under the \texttt{if()} chunk will not run. But that is definitely not what we want, we want it to also report "x is negaive" when x is actually negative. Therefore, we can introduce \texttt{elseif()} and \texttt{else}.
+```{r}
+x <- 0
+if(x > 0){
+  print("the variable x is positive")
+}else if(x < 0){
+  print("the variable x is negative")
+}else{
+  print("x is zero")
+}
+```
+If we want to transform the variable to binary outcome, we can use the function \texttt{ifelse()}:
+```{r}
+x <- 1:5
+ifelse(x>3, "Bigger than 3", "Not Bigger than 3")
+ifelse(x %% 2 == 0, "even", "odd")
+```
+
+# ``For" Loop
+Loops are core to computer programming. The first important loop is for loop whose basicform is \texttt{for(iter in vector)} action.
+```{r}
+result = 0
+for (i in 1:10) {
+  result <- result + i
+}
+result
+```
+How to understand this? Each time of the loop, the current result is updated to be the previous result plus the current i, and the i is looped from 1 to 10. Therefore, the previous loop is actually adding all integers from 1 to 10. Let's introduce another loop to get all diagonal element of a matrix:
+```{r}
+m1 <- matrix(1:16,4,4)
+result <- rep(NA,4)
+for (i in 1:4) {
+  result[i] <- m1[i,i]
+}
+print(m1)
+print(result)
+```
+# ``While" Loop
+In the for loop, we use the set to limit the times of the loop, when all elements in the set has gone through once, the loop ends. However, in the while loop, it's different. First, the argument in the \texttt{while()} is a condition, in other words, it's a logical value (TRUE/FALSE). Here is the example:
+```{r}
+result = 0
+i = 1
+while (i <= 10) {
+  result <- result + i
+  i <- i + 1
+}
+result
+```
+Imagine if we don't have \texttt{i <- i+1}... The loop will never ends! So it's important to update the condition. However, a special case is by using \texttt{break()}. This \texttt{break} function will jump outside of the current loop:
+
+```{r}
+result = 0
+i = 1
+while (1) {
+  result <- result + i
+  if(i == 10){
+    break()
+  }
+  i = i+1
+}
+result
+```
+Sometimes, we need double loop:
+```{r}
+m1 <- matrix(1:16,4,4)
+result <- 0
+for (i in 1:4) {
+  for(j in 1:4){
+    result <- result + m1[i,j]
+  }
+}
+result
+```
+There are one more type of loop called ``repeat loop", however, that is not as widely use as for and while loop. If you are interested in them, refer to: https://www.datacamp.com/tutorial/tutorial-on-loops-in-r.
+
+# Vectorization
+
+Although loops are powerful and necessary parts for any language, vectorization is the specific an even more powerful way in R to avoid loops and improve the computational efficiency. We have seen part of the vectorization in R:
+
+```{r}
+2*(1:5)
+```
+```{r}
+1:100 + 101:200
+```
+If we don't take the advantage of vectorization...
+```{r}
+n <- 10000000
+x <- 1:n
+y <- (n+1):2*n
+z <- rep(NA, n)
+
+t_loop <-
+system.time(
+for (i in 1:n) {
+  z[i] <- x[i] + y[i]
+}
+)
+t_vec <- 
+system.time(
+z <- x + y
+)
+print(t_loop)
+print(t_vec)
+
+```
+Note: The function system.time returns a named vector with:
+\begin{itemize}
+  \item user: (CPU time spent in R),
+  \item system: (CPU time spent in system calls),
+  \item elapsed: (wall-clock time).
+\end{itemize}
+
+One of the most important examples of vectorization is the function \texttt{apply()}.
+```{r}
+m1 <- matrix(1:16,4,4)
+m1
+```
+```{r}
+apply(m1, 1, sum)
+apply(m1, 2, sum)
+```
+```{r}
+rowSums(m1)
+colSums(m1)
+```
+Let's compare the time if we use the \texttt{apply} function and use loop:
+
+
+```{r}
+n <- 2000
+m1 <- matrix(1:n^2,n,n)
+res <- rep(NA, n)
+t_loop <-
+system.time(
+for (i in 1:n) {
+  tmp_res <- 0
+  for (j in 1:n) {
+    tmp_res <- tmp_res + m1[i,j]
+  }
+  res[i] <- tmp_res
+}
+)
+t_vec <- 
+system.time(
+apply(m1, 1, sum)
+)
+print(t_loop)
+print(t_vec)
+
+print(sum(res==apply(m1, 1, sum)))
+```
+In the previous example, we did the same task via both a loop and an \texttt{apply} function. We can see the vectorization operations can significantly improve the computational efficiency of the program.
+
+
+
+
+
+
+# Ackowledgement
+
+This teaching material is adapted from the previous material of this course made by \textcolor{blue}{\href{https://malfaro.netlify.app/}{Marcela Alfaro-Córdoba}} and \textcolor{blue}{\href{https://sites.google.com/view/shengjiang/home?authuser=0}{Sheng Jiang}}.
+
+
+
+
+
+
+
+
+
+
+
+
