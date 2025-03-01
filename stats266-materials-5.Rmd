@@ -1,0 +1,285 @@
+---
+title: "STATS 266 Handout - Data Visualization"
+author: "Qi Wang"
+date: "`r Sys.Date()`"
+output: 
+  pdf_document:
+    number_sections: true
+    toc: true
+    toc_depth: 2
+    latex_engine: xelatex
+fontsize: 11pt
+geometry: margin=1in
+
+header-includes: |
+  \usepackage{xcolor}
+  \usepackage{hyperref}
+  \hypersetup{
+    colorlinks=true,
+    linkcolor=black,       % Internal links (e.g., table of contents)
+    urlcolor=blue,         % External hyperlinks (change to your preferred color)
+    citecolor=red          % Citation links
+  }
+---
+\newpage
+
+# Introduction
+
+Welcome to **STATS 266: Introduction to R**. This handout provides an introduction about data visualization in R. By the end of this document, you should be able to:
+\begin{itemize}
+    \item To be able to use \texttt{ggplot2} to generate publication-quality graphics.
+    \item To apply geometry, aesthetic, and statistics layers to a \texttt{ggplot} plot.
+    \item To manipulate the aesthetics of a plot using different colors, shapes, and lines.
+    \item To improve data visualization through transforming scales and paneling by group.
+    \item To save a plot created with \texttt{ggplot} to disk.
+\end{itemize}
+
+For this part, valuable materials to refer to include \textcolor{blue}{https://ggplot2.tidyverse.org/} and \textcolor{blue}{https://swcarpentry.github.io/r-novice-gapminder/08-plot-ggplot2.html}.
+
+# Reading the Data
+
+Before doing any visualization, we should read the data into our environment. At the very beginning of the course, I introduced working for a project, and \texttt{here::here()} function. That's for the file path to the document. With this function, you will not need to specify the file path again.
+
+R can read a variety of data types, including structured and unstructured formats. Below are the common types of data that R can read along with the functions used to import them:
+
+\begin{itemize}
+    \item \textbf{CSV Files}: \texttt{read.csv("file.csv")} or \texttt{readr::read\_csv("file.csv")}
+    \item \textbf{Excel Files}: \texttt{readxl::read\_excel("file.xlsx")}
+    \item \textbf{Text Files (TSV, Fixed Width, etc.)}: 
+    \begin{itemize}
+        \item \texttt{read.table("file.txt")}
+        \item \texttt{read.delim("file.txt")}
+        \item \texttt{readr::read\_delim("file.txt", delim = "\textbackslash t")}
+    \end{itemize}
+    \item \textbf{JSON Files}: \texttt{jsonlite::fromJSON("file.json")}
+    \item \textbf{XML Files}: \texttt{XML::xmlParse("file.xml")}
+    \item \textbf{SPSS, SAS, and Stata Files}:
+    \begin{itemize}
+        \item \texttt{haven::read\_sav("file.sav")} (SPSS)
+        \item \texttt{haven::read\_sas("file.sas7bdat")} (SAS)
+        \item \texttt{haven::read\_dta("file.dta")} (Stata)
+    \end{itemize}
+    \item \textbf{R Binary Files}: 
+    \begin{itemize}
+        \item \texttt{load("file.RData")}
+        \item \texttt{readRDS("file.rds")}
+    \end{itemize}
+    \item \textbf{Database Connections}: 
+    \begin{itemize}
+        \item \texttt{DBI::dbReadTable(con, "table\_name")}
+        \item \texttt{dplyr::tbl(con, "table\_name")}
+    \end{itemize}
+\end{itemize}
+
+For efficient data handling, packages like \texttt{data.table}, \texttt{readr}, and \texttt{vroom} provide optimized functions for reading large datasets.
+
+# ggplot2
+
+\texttt{ggplot2} is a package in R that can create good looking figures in R. It works like putting a layer on another layer, so we use ``+" to concatenate layers together.
+```{r}
+library(ggplot2)
+ggplot()
+```
+If we only run a \texttt{ggplot()}, it returns to a blank figure to us, since we only set up a background, no future plots are made. For the next steps, we will use the in-built dataset ``mtcars" as examples.
+
+## Scatter Plots
+
+Scatter plots is one of the most commonly used plots in statistics. It visualizes the relationship between two variables. We can distinguish whether they are positively or negatively correlated based on scatter plots. It's also useful when we compare the values of two variables.
+```{r}
+dat <- mtcars
+ggplot() +
+  geom_point(aes(x = dat$mpg, y = dat$wt))
+```
+Based on the blank figure, we added one more layer called \texttt{geom\_point}. This returns to a scatter plot, with \texttt{aes(x = ...,y  = ...)} being the x-axis values and y-axis values. Based on this, we can do something to make the plot more readable:
+```{r}
+ggplot() +
+  geom_point(data = mtcars, aes(x = mpg, y = wt), color = "blue", size = 3, alpha = 0.7) +  # Enhancing points
+  labs(
+    title = "Car Mileage vs Weight",
+    x = "Miles per Gallon (mpg)",
+    y = "Weight (1000 lbs)"
+  ) +
+  theme_minimal(base_size = 10)  # Using a clean theme
+
+```
+In the \texttt{labs()}, we can set the legend title, figure title, and xy axis labels. In the \texttt{geom\_point} we can set the size of the point, shape of the point, and the color of the point. There are 25 different styles of points in R:
+```{r}
+library(ggplot2)
+
+# Create a dataframe with shape IDs
+point_shapes <- data.frame(
+  x = rep(1:6, length.out = 26),  # Adjust x positions for 26 points
+  y = rep(5:1, each = 6, length.out = 26),  # Adjust y positions for 26 points
+  shape = 0:25  # Shape IDs (0 to 25)
+)
+
+# Create the plot
+ggplot(point_shapes, aes(x = x, y = y)) +
+  geom_point(aes(shape = shape), size = 5, fill = "blue") +  # Shape varies, filled for 21-25
+  scale_shape_identity() +  # Use shape IDs directly
+  geom_text(aes(label = shape), nudge_y = -0.3, size = 5) +  # Label each point with its shape ID
+  labs(title = "Point shapes available in R") +
+  theme_minimal(base_size = 14) +
+  theme(axis.title = element_blank(), axis.text = element_blank(), axis.ticks = element_blank())
+
+```
+
+
+## Line Chart / Time Series Plot
+
+Sometimes, if the data is a time series:
+```{r warning=FALSE}
+library(ggplot2)
+library(dplyr)
+library(tidyr)
+library(lubridate)  # Ensure proper date handling
+
+# Set English locale for months
+# Sys.setlocale("LC_TIME", "C") 
+
+# Simulated time series data
+set.seed(123)
+time_series_data <- data.frame(
+  date = seq(as.Date("2023-01-01"), by = "month", length.out = 12),
+  series_A = cumsum(rnorm(12, mean = 5, sd = 2)), 
+  series_B = cumsum(rnorm(12, mean = 3, sd = 1.5)), 
+  series_C = cumsum(rnorm(12, mean = 4, sd = 1.8))
+)
+time_series_data
+```
+The data includes three time series. So we can use a line chart to plot them together. In this format of data, we call them wide format since they are combined together with a same date at each row. However, ggplot cannot recognize this type of data, we need to transform them to a long format.
+
+```{r warning=FALSE}
+# Transform data into long format for ggplot
+long_data <- time_series_data %>%
+  pivot_longer(cols = -date, names_to = "series", values_to = "value")
+long_data
+```
+We add one more colum called ``series", it's kind of a index of which series this observation is from. Based on this:
+
+```{r warning=FALSE}
+# Plot with English x-axis labels
+ggplot(long_data, aes(x = date, y = value, color = series)) +
+  geom_line(size = 1.2) + 
+  geom_point(size = 2) +  
+  scale_x_date(date_labels = "%b %Y") + 
+  labs(
+    title = "Multiple Time Series Plot",
+    x = "Date",
+    y = "Value",
+    color = "Series"
+  ) +
+  theme_minimal(base_size = 14) +
+  theme(legend.position = "top")
+
+```
+This example adds the data directly to the ggplot() function, that means for the following geom\_ functions, by default we are using the same data, same mapping, same color settings. In the \texttt{aes()} function, x axis is the date, y axis is the value, and we set the color of the line/point is the series variable in the long format data. In the \texttt{theme()} function, we can adjust a lot of personalized preferences. Refer to: https://www.rdocumentation.org/packages/ggplot2/versions/3.5.0/topics/theme. 
+
+Time series plots can visualize the trends, like stock market and population. 
+
+## Histogram and Density
+
+To visualize a distribution, or how the data are distributed, we can use a histogram in ggplot2. Below, we are using normal distribution samples as an example:
+```{r warning=FALSE}
+library(ggplot2)
+
+# Generate random samples from a normal distribution
+set.seed(123)  # For reproducibility
+data <- data.frame(value = rnorm(1000, mean = 50, sd = 10))
+
+# Create histogram with a density line
+ggplot(data, aes(x = value)) +
+  geom_histogram(aes(y = ..density..), binwidth = 5, fill = "blue", color = "black", alpha = 0.7) +
+  geom_density(color = "red", size = 1.2) +  # Add a smooth density line
+  labs(
+    title = "Histogram with Density Curve",
+    x = "Value",
+    y = "Density"
+  ) +
+  theme_minimal(base_size = 14)
+
+```
+We first drew a blue histogram, and then set a density curve above it. 
+
+## Boxplot
+
+Boxplots are used when we have multiple groups to compare. We want to compare the distribution of them, for example:
+```{r}
+library(ggplot2)
+
+# Create sample data
+set.seed(123)
+data <- data.frame(
+  category = rep(c("A", "B", "C"), each = 50),
+  value = c(rnorm(50, mean = 50, sd = 10),
+            rnorm(50, mean = 60, sd = 12),
+            rnorm(50, mean = 55, sd = 8))
+)
+
+# Boxplot with different colors for each category
+ggplot(data, aes(x = category, y = value, fill = category)) +  # Color by category
+  geom_boxplot(color = "black", alpha = 0.7) +  # Add black borders
+  scale_fill_manual(values = c("A" = "skyblue", "B" = "lightgreen", "C" = "orange")) +  # Custom colors
+  labs(title = "Boxplot with Different Colors", x = "Category", y = "Value") +
+  theme_minimal(base_size = 14)
+
+
+```
+The top edge of the box describes the third quartile of the data, the thick black line in the middle describes the median of the data, and the bottom edge of the box is the first quartile. From the plot, we can see the group B has an overall higher value than the group A and C.
+
+## Heatmap and Contour Plot
+
+Some spatial dataset, has a location together with a value. The location is usually given in a 2-d coordinate. In this case, we can use a heatmap or a contour plot.
+
+```{r warning=FALSE}
+library(ggplot2)
+library(MASS)  # For multivariate normal distribution
+
+# Generate 2D normal distribution data
+set.seed(123)
+mu <- c(0, 0)  # Mean vector
+sigma <- matrix(c(1, 0.8, 0.8, 1), ncol = 2)  # Covariance matrix
+samples <- mvrnorm(n = 1000, mu = mu, Sigma = sigma)  # Generate samples
+data <- data.frame(x = samples[,1], y = samples[,2])  # Convert to dataframe
+
+# Compute 2D density
+density_data <- with(data, MASS::kde2d(x, y, n = 100))  # Estimate density
+density_df <- data.frame(expand.grid(x = density_data$x, y = density_data$y), 
+                         density = as.vector(density_data$z))  # Convert to dataframe
+
+# 2D heatmap with geom_tile()
+ggplot(density_df, aes(x = x, y = y, fill = density)) +
+  geom_tile() +  # Heatmap using tiles
+  scale_fill_viridis_c() +  # Color scale
+  labs(title = "2D Normal Density Heatmap (Tile)",
+       x = "X-axis", y = "Y-axis", fill = "Density") +
+  theme_minimal(base_size = 14)
+
+```
+```{r}
+ggplot(density_df, aes(x = x, y = y, z = density)) +
+  geom_contour(color = "blue", size = 0.8) +  # Contour lines
+  labs(title = "2D Normal Density Contour Plot",
+       x = "X-axis", y = "Y-axis") +
+  theme_minimal(base_size = 14)
+```
+
+# More..
+
+ggplot2 is a very powerful package in R that can almost visualize any kind of data. Please go to https://ggplot2.tidyverse.org/articles/ggplot2.html for further information if in the future you want to do some fancy plots in R.
+
+# Ackowledgement
+
+This teaching material is adapted from the previous material of this course made by \textcolor{blue}{\href{https://malfaro.netlify.app/}{Marcela Alfaro-Córdoba}} and \textcolor{blue}{\href{https://sites.google.com/view/shengjiang/home?authuser=0}{Sheng Jiang}}.
+
+
+
+
+
+
+
+
+
+
+
+
