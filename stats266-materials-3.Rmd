@@ -61,6 +61,47 @@ ifelse(x>3, "Bigger than 3", "Not Bigger than 3")
 ifelse(x %% 2 == 0, "even", "odd")
 ```
 
+Another possible way to do choice is the function \texttt{switch()}:
+```{r}
+# Define choice
+color_choice <- "blue"
+
+# Use switch() to return a message based on choice
+message <- switch(color_choice,
+  "red" = "You chose red!",
+  "blue" = "You chose blue!",
+  "green" = "You chose green!",
+  "Invalid choice"
+)
+
+print(message)
+```
+This is more readable than multiple if-else statements for many choices. We can also use the function \texttt{case\_when()} from dplyr:
+```{r}
+# Load dplyr
+library(dplyr)
+
+# Create a sample dataset
+data <- data.frame(
+  score = c(85, 45, 67, 90, 72, 50, 30)
+)
+
+# Categorize scores into Grades
+data <- data %>%
+  mutate(grade = case_when(
+    score >= 80 ~ "A",
+    score >= 70 ~ "B",
+    score >= 60 ~ "C",
+    score >= 50 ~ "D",
+    TRUE ~ "F"  # Default case
+  ))
+
+# View result
+print(data)
+```
+
+
+
 # ``For" Loop
 Loops are core to computer programming. The first important loop is for loop whose basicform is \texttt{for(iter in vector)} action.
 ```{r}
@@ -116,7 +157,50 @@ for (i in 1:4) {
 }
 result
 ```
-There are one more type of loop called ``repeat loop", however, that is not as widely use as for and while loop. If you are interested in them, refer to: https://www.datacamp.com/tutorial/tutorial-on-loops-in-r.
+
+# Repeat Loop
+
+The basic structure of a repeat loop is:
+
+```{r}
+# repeat {
+#   if (condition) {
+#     break  # Exit the loop
+#   }
+# }
+```
+Here is an example of printing numbers from 1 to 5:
+```{r}
+# Print numbers from 1 to 5 using repeat loop
+counter <- 1
+
+repeat {
+  print(counter)  # Print the counter value
+  counter <- counter + 1  # Increment the counter
+  
+  if (counter > 5) {
+    break  # Exit the loop when counter exceeds 5
+  }
+}
+```
+When do we use repeat loop? One possible case is the keyword input. A common use case for a repeat loop is continuously asking for user input until a valid condition is met.
+```{r}
+# repeat {
+#   password <- readline(prompt = "Enter password: ")
+#   
+#   if (password == "stat226") {
+#     print("Access Granted!")
+#     break  # Exit loop if password is correct
+#   } else {
+#     print("Incorrect password. Try again.")
+#   }
+# }
+```
+
+
+
+
+Repeat loops are not as widely use as for and while loop. If you are interested in them, refer to: https://www.datacamp.com/tutorial/tutorial-on-loops-in-r.
 
 # Vectorization
 

@@ -65,6 +65,31 @@ fahr_to_kelvin <- function(temp) {
 fahr_to_kelvin(95)
 ```
 In this function, \texttt{temp} is the input argument, the part inside \{\} is the main body of the function. One of the most important thing is the \texttt{return()} here, which tells the computer which argument will it return to you, i.e., which variable is the output of the function.
+
+# Function Scoping and Environment
+
+What is Scoping? Scoping rules determine where and how variables are found. In R, function variables only exist inside the function unless explicitly returned.
+```{r}
+x <- 10 
+add_five <- function() {
+  x <- x + 5  
+  return(x)
+}
+add_five()
+```
+
+The $x$ in the above function is a global variable. If a function cannot find a variable in its local environment, it will go to find the global variable. But if the function can find a local variable, it will not look for a global variable. Here is another example
+```{r}
+y <- 1
+add_five_2 <- function(){
+  y <- 5
+  y <- y + 5
+  return(y)
+}
+add_five_2()
+```
+Note: Avoid using global variables inside functions. Always pass variables explicitly as function arguments.
+
 # Set Default Values
 
 As we see from the previous function, if we don't specify a value for the argument, the function will return an error. However, we can set the default values for the argument of the function.
@@ -122,7 +147,24 @@ rowSums(M)
 ```
 The return of the previous code is definitely not what we want, because when we change the dimension of the matrix, we also need to change the loop index and the result length. That would be too complicated when we have a long program. Therefore, avoid using detailed information about data, instead, define some argument to bring in the information of the data.
 
-# Composite Functions
+# Recursive Functions
+
+What Are Recursive Functions? A recursive function calls itself to solve a smaller subproblem. Useful for problems like factorial, Fibonacci sequences, and tree traversal.
+
+```{r}
+factorial_recursive <- function(n) {
+  if (n == 1) {
+    return(1)
+  } else {
+    return(n * factorial_recursive(n - 1))
+  }
+}
+
+factorial_recursive(5)  # Output: 120
+```
+
+
+# Higher Order Functions
 
 We can take the output of one function as the input of another function. In math, it's like $f(g(x))$. Let's make an example:
 ```{r}
@@ -141,6 +183,12 @@ What if we want to transform the temperature from Fahrenheit to Celsius? We firs
 fahr_to_kelvin(95)
 kelvin_to_celsius(fahr_to_kelvin(95))
 ```
+Recall the pipe function, we can use pipe function to pass the previous value to the next function:
+```{r message=FALSE}
+library(dplyr)
+fahr_to_kelvin(95) %>% kelvin_to_celsius()
+```
+
 For more technical details about a function, refer to: https://drive.google.com/file/d/1fA1d_G0-w2UsODAbRB6EIJ6zzapJKXod/view. This course is an introduction level of basic R skills, and will move to data visualization quickly.
 
 

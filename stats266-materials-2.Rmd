@@ -230,6 +230,175 @@ We can also use the bracket combined with the column name to subset a dataframe:
 df_a["A"]
 ```
 
+# Subsetting Dataframe with dplyr
+Although \texttt{which} function is powerful enough to filter the data, there are some more convenient ways. For example, if you have used SQL before, I believe you will be not so used to using \texttt{which} function. The **`dplyr` package** provides powerful functions for **subsetting and filtering** data efficiently. The following cases can be easily done via \texttt{dplyr}.
+
+- Selecting specific columns
+- Filtering rows based on conditions
+- Using logical operators for subsetting
+- Extracting rows by position
+- Combining multiple conditions
+
+We will use the **`mtcars` dataset** as an example.
+
+
+## Load Data and `dplyr` Package
+
+```{r message=FALSE, warning=FALSE}
+# Load necessary libraries
+library(dplyr)
+
+# Load dataset
+data(mtcars)
+
+# View first few rows
+head(mtcars)
+```
+
+## Selecting Specific Columns
+
+Usually, a dataset will have column names for each column, like SQL grammer, we can ``select" some columns from the dataframe.
+
+### Selecting One or More Columns
+```{r}
+# Select specific columns
+mtcars_selected <- mtcars %>%
+  select(mpg, hp, wt)
+
+# View first few rows
+head(mtcars_selected)
+```
+### Excluding Specific Columns
+
+```{r}
+mtcars_excluded <- mtcars %>%
+  select(-hp, -wt)
+
+# View first few rows
+head(mtcars_excluded)
+```
+
+Note the pipe function ``%>%" in R, provided by the magrittr package (included in dplyr), is used to make code more readable and structured by passing the result of one function directly into the next function. The basic syntax is:
+```{r}
+#data %>% function1() %>% function2() %>% function3()
+```
+and this is equivalent to 
+```{r}
+#function3(function2(function1(data)))
+```
+The pipe function pass the output from the previous function to the next function as the first argument. In a general case:
+```{r}
+double <- function(x) {
+  x * 2
+}
+
+# Apply the function using a pipe
+10 %>% double()  # Output: 20
+```
+## Filtering Rows with filter()
+
+The \texttt{filter()} function is used to select rows based on conditions.
+### Filtering for a Single Condition
+
+```{r}
+# Cars with mpg greater than 20
+mtcars_filtered <- mtcars %>%
+  filter(mpg > 20)
+
+# View first few rows
+head(mtcars_filtered)
+```
+### Filtering with Multiple Conditions
+
+```{r}
+# Cars with mpg > 20 and hp < 100
+mtcars_filtered2 <- mtcars %>%
+  filter(mpg > 20, hp < 100)
+
+# View first few rows
+head(mtcars_filtered2)
+```
+### Using OR (|) Condition
+
+```{r}
+# Cars with mpg > 25 OR hp > 150
+mtcars_filtered3 <- mtcars %>%
+  filter(mpg > 25 | hp > 150)
+
+# View first few rows
+head(mtcars_filtered3)
+```
+##  Filtering Rows by Position with slice()
+The slice() function extracts rows by position. Similar to the bracket, if we want to extract the first 5 rows:
+
+```{r}
+mtcars_first5 <- mtcars %>%
+  slice(1:5)
+
+# View result
+mtcars_first5
+```
+If we want to slice the last five rows:
+```{r}
+mtcars_last5 <- mtcars %>%
+  slice_tail(n = 5)
+
+# View result
+mtcars_last5
+```
+We can also slice random five rows:
+```{r}
+mtcars_random <- mtcars %>%
+  slice_sample(n = 5)  # Randomly selects 5 rows
+
+# View result
+mtcars_random
+```
+
+
+
+The filter() function is used to select rows based on conditions.
+
+## Using Logical Operators in filter()
+
+We can use logical operators for complex filtering. 
+### Using %in% for Matching Multiple Values
+
+```{r}
+# Cars with 4 or 6 cylinders
+mtcars_subset <- mtcars %>%
+  filter(cyl %in% c(4, 6))
+
+# View result
+head(mtcars_subset)
+```
+This code extracts rows where cyl is 4 or 6.
+
+### Filtering with NOT (!=)
+
+```{r}
+# Cars that are NOT 8 cylinders
+mtcars_not8 <- mtcars %>%
+  filter(cyl != 8)
+
+# View result
+head(mtcars_not8)
+```
+
+## Combining Multiple Subsetting Methods
+We can combine select(), filter(), and slice() for complex subsetting. If we extract cars with mpg > 20, Select Only mpg and hp, and get first 5 rows:
+```{r}
+mtcars_combined <- mtcars %>%
+  filter(mpg > 20) %>%
+  select(mpg, hp) %>%
+  slice(1:5)
+
+# View result
+mtcars_combined
+```
+
+It's kind of similar to the SQL grammer, where you select the columns and filter the colums by some criterias.
+
 
 # Ackowledgement
 
