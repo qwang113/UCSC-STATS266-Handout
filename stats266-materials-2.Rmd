@@ -104,7 +104,16 @@ These are indices! It returns to the position of the vector that we want. So we 
 ```{r}
 v1[idx]
 ```
-Basic ideas here are to first find which positions in the series are those we want. We set filtering conditions, combine with \texttt{which} function to get the positions, then just subset the full vector.
+Basic ideas here are to first find which positions in the series are those we want. We set filtering conditions, combine with \texttt{which} function to get the positions, then just subset the full vector. 
+
+Sometimes we need to sort the elements in the vector, we can use function \texttt{sort} or \texttt{order}:
+
+```{r}
+x <- c(10,50,30,20,40)
+sort(x)
+order(x)
+```
+The function \texttt{sort()} returns the sorted data. By adding an argument \texttt{decreasing = TRUE}, it returns the sorted data in decreasing order. The \texttt{order()} function returns to the  order of the original data after arranging them in increasing or decreasing order.
 
 
 
@@ -152,7 +161,11 @@ Subsetting the specific some elements of the matrix:
 m1[1,1]
 m1[1,1:2]
 ```
-We can also use \texttt{which()} function to subset the matrix, this is left for an exercise for you.
+We can also use \texttt{which()} function to subset the matrix, this is left for an exercise for you. If we want to return the matrix index instead of regarding the matrix to be a vector:
+```{r}
+which(m1%%2==0, arr.ind = TRUE)
+```
+
 
 ## Array 
 
