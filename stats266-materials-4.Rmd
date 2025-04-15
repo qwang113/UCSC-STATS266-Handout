@@ -242,11 +242,11 @@ An interesting fact: bisection method only needs \( f(a) \cdot f(b) < 0 \). Howe
 
 ```{r}
 f <- function(x) {
-  x^3 - x - 2
+  (x^3 - x - 2)/1000
 }
 
 f2 <- function(x){
-  20*x^3 - 500*x
+  (20*x^3 - 500*x)/1000
 }
 
 x <- seq(from = -10, to = 10, by = 0.1)
