@@ -1,0 +1,82 @@
+---
+title: "Note Apr.15"
+author: "Qi"
+date: "2025-04-15"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+far_to_kel <- function(far){
+  kel <- (far-32)*5/9+273.15
+  return(kel)
+}
+
+far_to_kel(15)
+
+
+```
+
+```{r}
+rm(list = ls())
+x <- 10
+
+# write a function to add five to the input and return
+add_five <- function(numbers=0) {
+numbers <- numbers + 5
+return(numbers)
+}
+
+add_five(7)
+```
+
+```{r}
+rm(list = ls())
+y <- 1
+add_five_2 <- function(){
+y <- 5
+y <- y + 5
+return(y)
+}
+add_five_2()
+```
+```{r}
+M <- matrix(1:25, nrow=5, ncol = 5)
+# M
+rowsum2 <- function(mat){
+  out <- rep(NA, nrow(mat))
+  for (row_idx in 1:nrow(mat) ) {
+   out[row_idx] <- sum(mat[row_idx,])
+  }
+  return(out)
+}
+rowsum2(M)
+sum(M[1,])
+```
+```{r}
+factorial_recursive <- function(n) {
+if (n == 1) {
+return(1)
+} else {
+return(n * factorial_recursive(n - 1))
+}
+}
+factorial_recursive(5) # Output: 120
+```
+```{r}
+# x^2 + x^3 = -e^x + 4*x - 4
+# x^2 + x^3 + e^x - 4*x + 4 = 0
+# X <- matrix(1:10000), nrow = 100, ncol = 100)
+Y <- matrix(1:9, nrow = 3, nco = 3)
+r <- nrow(X)
+Y
+c(Y)
+1:nrow(Y) 
+```
+
+
+
+
