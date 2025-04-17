@@ -29,8 +29,6 @@ Welcome to **STATS 266: Introduction to R**. This handout provides an introducti
 \begin{itemize}
   \item Define a function that takes arguments.
   \item Return a value from a function.
-  \item Check argument conditions with stopifnot() in functions.
-  \item Test a function.
   \item Set default values for function arguments.
   \item Explain why we should divide programs into small, single-purpose functions.
 \end{itemize}
@@ -46,6 +44,19 @@ Functions gather a sequence of operations into a whole, preserving it for ongoin
   \item rich connections to the larger programming environment
 \end{itemize}
 
+Why should we define functions?
+
+\begin{itemize}
+  \item \textbf{Modularity:} Functions break complex tasks into smaller, manageable pieces, making code easier to understand and maintain.
+  \item \textbf{Reusability:} Once a function is defined, it can be reused in different parts of a script or project without rewriting the same code.
+  \item \textbf{Avoid Repetition:} Functions help avoid repeating code.
+  \item \textbf{Improved Debugging:} Errors are easier to isolate and fix when logic is encapsulated in individual functions.
+  \item \textbf{Parameterization:} Functions allow for flexible inputs, making it easy to apply the same logic to different data or arguments.
+  \item \textbf{Documentation and Clarity:} Well-named functions with comments serve as documentation, improving readability and collaboration.
+  \item \textbf{Testing and Validation:} Functions can be individually tested for correctness, which helps ensure code reliability.
+\end{itemize}
+
+
 
 As the basic building block of most programming languages, user-defined functions constitute ``programming" as much as any single abstraction can. If you have written a function, you are a computer programmer. The basic format of a function looks like this:
 ```{r}
@@ -55,7 +66,7 @@ my_function <- function(parameters) {
 }
 ```
 For example, if we want to create a function that transform the Fahrenheit to Kelvin, in a mathematical function, we use:
-$$K = \frac{(F-32)\times 5}{9}+273.15$$. In an R function:
+$$K = \frac{(F-32)\times 5}{9}+273.15.$$ In an R function:
 
 ```{r}
 fahr_to_kelvin <- function(temp) {
@@ -164,7 +175,7 @@ factorial_recursive(5)  # Output: 120
 ```
 
 
-# Higher Order Functions
+# Higher Order (Composite) Functions
 
 We can take the output of one function as the input of another function. In math, it's like $f(g(x))$. Let's make an example:
 ```{r}
@@ -192,7 +203,107 @@ fahr_to_kelvin(95) %>% kelvin_to_celsius()
 For more technical details about a function, refer to: https://drive.google.com/file/d/1fA1d_G0-w2UsODAbRB6EIJ6zzapJKXod/view. This course is an introduction level of basic R skills, and will move to data visualization quickly.
 
 
+# An Example: Bisection Method
 
+
+## Introduction to bisection method
+
+In this example, we use a loop inside a function to implement the **bisection method**, which numerically solves equations of the form \( f(x) = 0 \). We will apply it to the equation:
+
+\[
+f(x) = x^3 - x - 2
+\]
+
+The **bisection method** is a simple and reliable numerical technique for solving equations of the form \( f(x) = 0 \). It belongs to the class of *bracketing methods*, which require the initial interval \([a, b]\) to satisfy \( f(a) \cdot f(b) < 0 \), meaning the function changes sign in the interval — and thus, by the Intermediate Value Theorem, has at least one root there.
+
+It is particularly useful when an analytical solution is difficult or impossible to find.
+
+## Bisection Method Algorithm
+
+## Description of the Algorithm
+
+The bisection method works as follows:
+
+\begin{itemize}
+  \item Start with a closed interval \([a, b]\) such that \( f(a) \cdot f(b) < 0 \).
+  \item Compute the midpoint \( c = \frac{a + b}{2} \).
+  \item Evaluate \( f(c) \):
+    \begin{itemize}
+      \item If \( f(c) = 0 \), then \( c \) is the root.
+      \item If \( f(c) \cdot f(a) < 0 \), the root lies in \([a, c]\); set \( b = c \).
+      \item Otherwise, the root lies in \([c, b]\); set \( a = c \).
+    \end{itemize}
+  \item Repeat this process until the interval is sufficiently small or \( f(c) \) is close enough to zero.
+\end{itemize}
+
+This method converges linearly and guarantees success if the function is continuous on \([a, b]\) and \( f(a) \cdot f(b) < 0 \).
+
+An interesting fact: bisection method only needs \( f(a) \cdot f(b) < 0 \). However, one drawback is that it's hard to detect multiple roots. A lot of variants of bisection method are available to these cases. One brute force way is to visualize the function, and use bisection method multiple times to find all possible roots.
+
+```{r}
+f <- function(x) {
+  (x^3 - x - 2)/1000
+}
+
+f2 <- function(x){
+  (20*x^3 - 500*x)/1000
+}
+
+x <- seq(from = -10, to = 10, by = 0.1)
+y <- f(x)
+y2 <- f2(x)
+plot(x,y, type = 'l', col = 'blue')
+lines(x,y2, type = 'l', col = 'green')
+abline(h = 0, col = "red", lty = "dashed", lwd = 2)
+```
+
+
+## Bisection Method Implementation
+
+```{r}
+# Define the target function
+f <- function(x) {
+  x^3 - x - 2
+}
+
+# Bisection method function
+bisection_method <- function(f, a, b, tol = 1e-6, max_iter = 100) {
+  if (f(a) * f(b) > 0) {
+    stop("Function must have opposite signs at endpoints a and b.")
+  }
+
+  for (i in 1:max_iter) {
+    c <- (a + b) / 2  # Midpoint
+    if (abs(f(c)) < tol || (b - a)/2 < tol) {
+      cat("Converged in", i, "iterations\n")
+      return(c)
+    }
+    if (f(c) * f(a) < 0) {
+      b <- c
+    } else {
+      a <- c
+    }
+  }
+
+  warning("Maximum iterations reached without convergence.")
+  return((a + b) / 2)
+}
+```
+
+
+```{r}
+# Use the function
+root <- bisection_method(f, a = 1, b = 2)
+cat("Estimated root:", root, "\n")
+
+
+# Visualize the function and the root
+curve(f, from = 0, to = 3, col = "blue", lwd = 2,
+      ylab = "f(x)", main = "Plot of f(x) = x^3 - x - 2")
+abline(h = 0, col = "red", lty = 2)
+points(root, f(root), col = "green", pch = 19)
+
+```
 
 # Ackowledgement
 
