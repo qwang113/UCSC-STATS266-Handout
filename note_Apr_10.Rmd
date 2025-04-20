@@ -1,0 +1,179 @@
+---
+title: "STAT266 Apr.10"
+author: "Qi"
+date: "2025-04-10"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+```{r}
+install.packages("dplyr")
+library(dplyr)
+```
+```{r}
+attach(mtcars)
+colnames(mtcars)
+mtcars[,"mpg"]
+mpg
+str(mtcars)
+head(mtcars)
+
+```
+```{r}
+5.1234 %>% round(2)
+# Equivalent to
+round(5.1234,2)
+mtcars_selected <- mtcars %>% select(mpg, hp, wt)
+# Equivalent to
+select(mtcars, mpg, hp, wt)
+mtcars_selected
+
+mtcars_excluded <- mtcars %>% select(-mpg, -hp, -wt)
+mtcars_excluded
+
+mtcars_filtered <- mtcars %>% filter( mpg > 20)
+mtcars_filtered
+
+mtcars_advanced <- mtcars %>% select(mpg, cyl, disp) 
+                          %>% filter(mpg > 20, cyl == 4, disp > 50)
+
+  # we want the column mpg, cyl, disp, mpg > 20, cyl = 4, disp > 50
+mtcars[1:5,]
+mtcars_1 <- mtcars %>% filter(cyl == 4 | cyl == 6)
+mtcars_1 <- mtcars %>% filter(cyl %in% c(4,6) )
+3 %in% c(1,2)
+3 %in% c(1,2,3)
+```
+```{r}
+x <- 0
+if( x > 0 ){
+  print("x is positive")
+}else if(x < 0 ){
+  print("x is negative")
+}else{
+  print("x equals 0")
+}
+
+ifelse(x>0, print("x is positive"), print("x is not positive"))
+```
+```{r}
+x <- 1:5
+
+
+ifelse(x > 3, "Bigger than 3","Not bigger than 3")
+x > 3
+```
+
+```{r}
+message <- switch ("pink",
+  "blue" = "You chose blue",
+  "red" = "you chose red",
+  "yellow" = "you chose yellow",
+  "Not blue, red or yellow."
+)
+message
+```
+```{r}
+data <- data.frame(scores = c(15,25,36,45,59,67,58,59,98,97,85,20,67,78,88,83))
+data %>% mutate(
+  grade = case_when(
+    scores >= 50 & scores < 60 ~ "D",
+    scores >= 60 & scores < 70 ~ "C",
+    scores >= 70 & scores < 80 ~ "B",
+    scores >= 80 ~ "A",
+    TRUE ~ "F"
+  )
+)
+# It's ordered, so subset the smallest set first.
+```
+```{r}
+results <- 0
+nums <- c(1,4,5,6,9,11,12)
+for (i in nums) {
+  results <- results + i
+}
+results
+sum(nums)
+```
+
+
+```{r}
+Diag_elements <- rnorm(5)
+Diag_elements
+diag_mat <- matrix(0, nrow = length(Diag_elements), ncol = length(Diag_elements))
+diag_mat
+for (i in 1:length(Diag_elements)) {
+ diag_mat[i,i]  <- Diag_elements[i]
+}
+diag_mat
+```
+
+```{r}
+results <- 0
+i = 1
+while(i <= 10){
+  results <- results + i
+  i = i+1
+}
+
+results <- 0
+i = 0
+while (TRUE) {
+  i = i + 1
+  results <- results + i
+  if(i >= 10){break()}
+}
+
+results
+```
+```{r}
+A <- matrix(rnorm(15), nrow = 3, ncol = 5)
+# 1. Sum of A
+
+results <- 0
+
+for (i in 1:nrow(A)) {
+  for (j in 1:ncol(A)) {
+    results <- results + A[i,j]
+  }
+}
+
+counter <- 1
+repeat{
+  print(counter)
+  counter <- counter + 1
+  if(counter > 10000){break()}
+}
+
+```
+```{r}
+n <- 1e7
+x <- 1:n
+y <- (n+1):(2*n)
+z <- rep(NA, n)
+t_loop <-
+system.time(
+  for (i in 1:n) {
+    z[i] <- x[i] + y[i]
+  }
+)
+
+t_vec <-
+system.time(
+  z <- x+y
+)
+```
+
+
+```{r}
+print(t_loop)
+print(t_vec)
+```
+```{r}
+A <- matrix(rnorm(35), nrow = 5, ncol = 7)
+colSums(A)
+apply(A, 2, mean)
+```
+

@@ -1,0 +1,81 @@
+---
+title: "Note_Apr.17"
+author: "Qi"
+date: "2025-04-17"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+# HW1 Q2
+```{r}
+# ?seq()
+rm(list = ls())
+seq(from = 0, to = 10, by = 1.5)
+seq(from = 0, to = 10, length.out = 15)
+```
+# HW1 Q3.1
+```{r}
+set.seed(0)
+x <- round(rnorm(100),2)
+seq(from = 1, to = 100, by = 2)
+
+# Subset the sequence in two methods
+x[seq(from = 1, to = 100, by = 2)] == x[(1:50)*2-1]
+
+```
+
+# HW1 Q3.2
+```{r}
+library(dplyr)
+# Step 1:
+tmp <- (x*10)%>%abs() %>% floor()
+tmp
+tmp %% 10
+idx <- which(tmp %% 10 == 1)
+x[idx]
+```
+# HW1 Q3.3
+```{r}
+library(dplyr)
+# Step 1:
+tmp <- (x*10)%>%abs() %>% floor()
+idx1 <- which(tmp %% 2 == 1)
+# Step 2:
+tmp2 <- (x*100)%>%abs() %>% floor()
+idx2 <- which( tmp2 %% 2 == 0)
+
+idx_final <- which(tmp %% 2 == 1 & tmp2 %% 2 ==0)
+x[idx_final]
+
+# Method 2
+floor((abs(x)-as.integer(abs(x)))*10)
+```
+# HW1 Q4.1
+```{r}
+X <- matrix(x, nrow = 10, ncol = 10, byrow = TRUE)
+location <- order(X, decreasing = TRUE)
+colidx <- ceiling(location/10)
+rowidx <- location %% 10
+location
+cbind(rowidx,colidx,location,1:100)
+```
+
+```{r}
+t( matrix(rep(t(X),100) , nrow = 10, ncol = 1000) )
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
