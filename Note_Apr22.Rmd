@@ -1,0 +1,76 @@
+---
+title: "Note_Apr22"
+author: "Qi"
+date: "2025-04-22"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+```{r}
+rm(list = ls())
+# install.packages("here")
+# library(here)
+here::here()
+getwd()
+read.table()
+x <- 1
+# install.packages("ggplot2")
+```
+
+```{r}
+library(ggplot2)
+dat <- mtcars
+ggplot() +
+geom_point(aes(y = dat$mpg, x = dat$wt), color = "#FF8788", shape = 19, size = 5) +
+  labs(x = "Weight", y = "MPG", title = "Scatter Plot of Weight and MPG") +
+  theme_bw(base_size = 10) +
+  theme(plot.title = element_text(hjust = 0.5))
+```
+```{r}
+library(mvtnorm)
+mean_vec <- rep(0,2)
+Sig <- matrix(c(1,0.5,0.5,1),2,2)
+simulations <- rmvnorm(10000, mean = mean_vec, sigma = Sig)
+ggplot() +
+  geom_point(aes(x = simulations[,1], y = simulations[,2]), alpha = 0.1)
+```
+```{r}
+library(tidyr)
+library(lubridate) # Ensure proper date handling
+set.seed(123)
+time_series_data <- data.frame(
+date = seq(as.Date("2023-01-01"), by = "month", length.out = 12),
+series_A = cumsum(rnorm(12, mean = 5, sd = 2)),
+series_B = cumsum(rnorm(12, mean = 3, sd = 1.5)),
+series_C = cumsum(rnorm(12, mean = 4, sd = 1.8))
+)
+long_data <- time_series_data %>%
+pivot_longer(cols = -date, names_to = "series", values_to = "value")
+```
+
+
+```{r}
+ggplot(long_data, aes(x = date, y = value, color = series, linetype = series)) +
+geom_line(linewidth = 1.2) +
+geom_point(size = 2) +
+scale_x_date(date_labels = "%b %Y") +
+labs(
+title = "Multiple Time Series Plot",
+x = "Date",
+y = "Value",
+color = "Series"
+) +
+theme_minimal(base_size = 14) +
+theme(legend.position = "top")
+
+
+time_series_data
+plot(x = 1:nrow(time_series_data), y = time_series_data[,2], xlab = "Time", ylab = "Value",
+     main = "Time Series Plot", pch = 19, lwd = 5, lty = 2, type = 'p', col = "red")
+lines(x = 1:nrow(time_series_data), y = time_series_data[,3], pch = 19, lwd = 5, lty = 2, type = 'p', col = "blue")
+
+```
+
+
