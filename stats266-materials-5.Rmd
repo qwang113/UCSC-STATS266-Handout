@@ -73,7 +73,7 @@ R can read a variety of data types, including structured and unstructured format
 
 For efficient data handling, packages like \texttt{data.table}, \texttt{readr}, and \texttt{vroom} provide optimized functions for reading large datasets.
 
-# ggplot2
+# Numerical Data
 
 \texttt{ggplot2} is a package in R that can create good looking figures in R. It works like putting a layer on another layer, so we use ``+" to concatenate layers together.
 ```{r}
@@ -201,6 +201,101 @@ ggplot(data, aes(x = value)) +
 ```
 We first drew a blue histogram, and then set a density curve above it. 
 
+## Correlation Matrix Plot
+Correlation is a statistical measure that describes the strength and direction of a relationship between two numeric variables. The most common measure is the Pearson correlation coefficient, which ranges from -1 to 1:
+
+ - A value of **1** implies a perfect positive linear relationship
+ - A value of **0** implies no linear relationship
+ - A value of **-1** implies a perfect negative linear relationship
+
+Visualizing correlation can help us better understand relationships between variables in a dataset. In this tutorial, we'll use R and the `ggplot2` package to create a correlation plot.
+
+```{r}
+library(ggplot2)
+data(mtcars)
+head(mtcars)
+```
+
+### Step 1: Compute Correlation Matrix
+
+We first calculate the correlation matrix using `cor()`.
+
+```{r}
+library(ggcorrplot)
+corr_matrix <- round(cor(mtcars), 2)
+corr_matrix
+```
+
+### Step 2: Visualize with ggcorrplot
+
+We use the `ggcorrplot` package to make the visualization more intuitive. This function creates a heatmap where the color and size of the tiles represent the correlation strength.
+
+```{r}
+ggcorrplot(corr_matrix,
+           method = "circle",
+           type = "lower",
+           lab = TRUE,
+           lab_size = 3,
+           colors = c("blue", "white", "yellow"),
+           title = "Correlation Matrix of mtcars",
+           ggtheme = theme_minimal())
+```
+### Step 3: Interpret the Plot
+
+In the correlation plot:
+
+ - **Darker blue circles** indicate strong positive correlation (e.g., weight and horsepower)
+ - **Darker red circles** indicate strong negative correlation (e.g., mpg and weight)
+ - **Smaller or white circles** indicate weak or no correlation
+
+This plot helps you identify which variables are strongly related and may influence one another, which is useful in regression modeling, feature selection, and exploratory data analysis.
+
+### Conclusion
+
+Correlation plots provide a quick and effective way to explore relationships in your data. With `ggcorrplot` and `ggplot2`, it's easy to produce publication-quality visualizations to support your analysis.
+
+
+# Categorical Data
+
+## Grouping
+
+We simulate two bivariate normal distributions using `MASS::mvrnorm()` and visualize them using `ggplot2`. Each group is colored differently to show separation in the 2D space.
+
+```{r}
+# Load required packages
+library(MASS)
+library(ggplot2)
+
+# Set seed for reproducibility
+set.seed(123)
+
+# Parameters for Group 1
+mu1 <- c(2, 3)
+sigma1 <- matrix(c(1, 0.5, 0.5, 1), nrow = 2)
+group1 <- mvrnorm(n = 100, mu = mu1, Sigma = sigma1)
+
+# Parameters for Group 2
+mu2 <- c(6, 7)
+sigma2 <- matrix(c(1, -0.3, -0.3, 1), nrow = 2)
+group2 <- mvrnorm(n = 100, mu = mu2, Sigma = sigma2)
+
+# Combine into one data frame
+df <- data.frame(
+  x = c(group1[,1], group2[,1]),
+  y = c(group1[,2], group2[,2]),
+  group = factor(c(rep("Group 1", 100), rep("Group 2", 100)))
+)
+
+# Plot
+ggplot(df, aes(x = x, y = y, color = group)) +
+  geom_point(alpha = 0.7, size = 2) +
+  labs(title = "Simulated Bivariate Normals",
+       x = "X", y = "Y") +
+  theme_minimal() +
+  theme(legend.position = "top")
+
+```
+
 ## Boxplot
 
 Boxplots are used when we have multiple groups to compare. We want to compare the distribution of them, for example:
@@ -226,6 +321,22 @@ ggplot(data, aes(x = category, y = value, fill = category)) +  # Color by catego
 
 ```
 The top edge of the box describes the third quartile of the data, the thick black line in the middle describes the median of the data, and the bottom edge of the box is the first quartile. From the plot, we can see the group B has an overall higher value than the group A and C.
+
+
+
+
+## Bar plot
+
+```{r}
+ggplot(mtcars, aes(x = factor(cyl))) +
+  geom_bar(fill = "steelblue")
+ggplot(mtcars, aes(x = factor(cyl), fill = factor(am))) +
+  geom_bar(position = "dodge")
+  
+```
+
+
+# Special Cases
 
 ## Heatmap and Contour Plot
 
@@ -263,6 +374,145 @@ ggplot(density_df, aes(x = x, y = y, z = density)) +
        x = "X-axis", y = "Y-axis") +
   theme_minimal(base_size = 14)
 ```
+
+
+## Simulated 2D Gaussian bump
+```{r}
+
+library(ggplot2)
+
+x <- seq(-3, 3, length.out = 100)
+y <- seq(-3, 3, length.out = 100)
+grid <- expand.grid(x = x, y = y)
+grid$z <- with(grid, exp(-x^2 - y^2))
+
+ggplot(grid, aes(x = x, y = y, z = z)) +
+  geom_tile(aes(fill = z)) +
+  geom_contour(color = "white") +
+  scale_fill_viridis_c() +
+  theme_minimal() +
+  labs(title = "Contour + Heatmap", fill = "Density")
+
+```
+
+```{r}
+library(ggplot2)
+
+# Simulate a vector field
+x <- y <- seq(-2, 2, length.out = 20)
+grid <- expand.grid(x = x, y = y)
+grid$u <- -grid$x
+grid$v <- -grid$y
+
+ggplot(grid, aes(x = x, y = y)) +
+  geom_segment(aes(xend = x + u * 0.1, yend = y + v * 0.1),
+               arrow = arrow(length = unit(0.1, "inches")),
+               color = "blue") +
+  coord_fixed() +
+  theme_minimal() +
+  labs(title = "Vector Field Visualization")
+
+```
+
+
+# Personalize 
+
+## 🎨 Customizing ggplot2 Plots
+
+`ggplot2` provides powerful tools for customizing the appearance of your plots. Personalization can help highlight important patterns, improve clarity, and make your visuals publication-ready.
+
+### ✅ Titles, Axis Labels, and Legends
+
+Use `labs()` to change plot title, axis names, and legend title.
+
+```{r}
+library(ggplot2)
+
+ggplot(mtcars, aes(x = wt, y = mpg, color = factor(cyl))) +
+  geom_point(size = 3) +
+  labs(title = "Fuel Efficiency vs Weight",
+       subtitle = "Grouped by Number of Cylinders",
+       x = "Weight (1000 lbs)",
+       y = "Miles per Gallon",
+       color = "Cylinders")
+```
+
+### 🎨 Colors and Shapes
+
+Use `scale_color_manual()` to manually define colors; use `shape =` for custom point types.
+
+```{r}
+ggplot(mtcars, aes(x = wt, y = mpg, color = factor(cyl), shape = factor(gear))) +
+  geom_point(size = 3) +
+  scale_color_manual(values = c("red", "green", "blue")) +
+  labs(color = "Cylinders", shape = "Gears")
+```
+
+### 🖼️ Themes and Fonts
+
+Use built-in themes like `theme_minimal()`, `theme_classic()` or customize with `theme()`.
+
+```{r}
+ggplot(mtcars, aes(x = wt, y = mpg)) +
+  geom_point(color = "steelblue") +
+  labs(title = "Default Theme vs Minimal Theme") +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(hjust = 0.5, size = 16, face = "bold"),
+    axis.title = element_text(size = 14),
+    legend.position = "bottom"
+  )
+```
+
+### 🗺️ Legend Control
+
+```{r}
+ggplot(mtcars, aes(x = wt, y = mpg, color = factor(cyl))) +
+  geom_point(size = 3) +
+  theme(legend.position = "top")  # Other options: "bottom", "left", "none"
+```
+
+Or remove legend entirely:
+
+```{r}
+ggplot(mtcars, aes(x = wt, y = mpg, color = factor(cyl))) +
+  geom_point(size = 3) +
+  theme(legend.position = "none")
+```
+
+### 📐 Coordinate Control
+
+```{r}
+ggplot(mtcars, aes(x = wt, y = mpg)) +
+  geom_point() +
+  coord_cartesian(xlim = c(2, 5), ylim = c(10, 35)) +
+  labs(title = "Zoomed View")
+```
+
+### ✍️ Text and Annotation
+
+```{r}
+ggplot(mtcars, aes(x = wt, y = mpg)) +
+  geom_point() +
+  annotate("text", x = 4, y = 30, label = "High Efficiency", color = "red") +
+  labs(title = "Annotated Plot")
+```
+
+## 🎯 Summary
+
+| Task                  | Function(s)                             |
+|-----------------------|------------------------------------------|
+| Change title/label    | `labs()`, `ggtitle()`, `xlab()`          |
+| Manual color palette  | `scale_color_manual()`                  |
+| Font/size/position    | `theme()` with `element_text()`         |
+| Theme style           | `theme_minimal()`, `theme_classic()`    |
+| Legend control        | `theme(legend.position = ...)`          |
+| Axis limits           | `coord_cartesian()`                     |
+| Add annotation        | `annotate()`, `geom_text()`             |
+
+With these tools, your ggplot2 plots can be effectively customized for clarity, impact, and communication.
+
+
 
 # More..
 
