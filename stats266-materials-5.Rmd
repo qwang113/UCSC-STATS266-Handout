@@ -512,6 +512,154 @@ ggplot(mtcars, aes(x = wt, y = mpg)) +
 
 With these tools, your ggplot2 plots can be effectively customized for clarity, impact, and communication.
 
+# Exerciese: Iris Dataset
+
+
+## Introduction
+
+In this exercise, we will explore the **iris** dataset, which contains measurements of 150 iris flowers from three different species. The goal is to visualize and analyze the relationships between the variables using various types of plots. 
+
+The **iris** dataset is a classic and widely used dataset in statistics and machine learning. It consists of 150 observations of iris flowers from three different species: *setosa*, *versicolor*, and *virginica*. Each observation includes four numeric measurements:
+
+ - **Sepal.Length**: Length of the sepal (in centimeters)
+ - **Sepal.Width**: Width of the sepal (in centimeters)
+ - **Petal.Length**: Length of the petal (in centimeters)
+ - **Petal.Width**: Width of the petal (in centimeters)
+
+In addition to these measurements, the dataset includes a **Species** column, which indicates the species to which each flower belongs. The dataset is often used to demonstrate classification, clustering, and data visualization techniques.
+
+In this exercise, we will explore various ways to visualize and analyze the relationships between these variables.
+
+---
+
+## Load the Dataset
+
+```{r}
+# Load necessary packages
+library(ggplot2)
+
+# Load the iris dataset
+data(iris)
+head(iris)
+```
+
+---
+
+## Exercise 1: Scatter Plot for Relationship Between Two Numerical Variables
+
+### Question:
+- You are interested in how `Sepal.Length` relates to `Sepal.Width`. Which type of plot would you use to visualize this relationship, and why?
+
+### Solution:
+Suppose you want to study the relationship between `Sepal.Length` and `Sepal.Width`. A scatter plot is a good way to visualize how these two variables are related. 
+
+```{r}
+# Scatter plot of Sepal.Length vs Sepal.Width
+ggplot(iris, aes(x = Sepal.Length, y = Sepal.Width)) +
+  geom_point(aes(color = Species)) +
+  labs(title = "Scatter Plot of Sepal Length vs Sepal Width") +
+  theme_minimal()
+```
+
+
+
+---
+
+## Exercise 2: Boxplot for Comparison Across Categories
+
+### Question:
+- If you want to compare the distribution of `Petal.Length` between different species, which plot is the most suitable, and why?
+
+
+### Solution:
+Now, suppose you want to compare `Petal.Length` across the different species. A boxplot is a good option to show the distribution and potential outliers of `Petal.Length` for each species.
+
+```{r}
+# Boxplot of Petal.Length by Species
+ggplot(iris, aes(x = Species, y = Petal.Length, fill = Species)) +
+  geom_boxplot() +
+  labs(title = "Boxplot of Petal Length by Species") +
+  theme_minimal()
+```
+
+
+
+---
+
+## Exercise 3: Pairwise Scatter Plot
+
+### Question:
+- What can you learn from the pairwise scatter plot about the relationships between the numerical variables in the dataset? Which pair of variables show the strongest correlation?
+
+
+
+### Solution:
+You want to investigate the relationship between multiple numerical variables, say `Sepal.Length`, `Sepal.Width`, `Petal.Length`, and `Petal.Width`. A pairwise scatter plot matrix is useful to examine the relationships between all combinations of variables.
+
+```{r}
+# Pairwise scatter plot matrix
+library(GGally)
+ggpairs(iris, columns = 1:4, aes(color = Species))
+```
+
+
+---
+
+## Exercise 4: Violin Plot for Distribution Comparison
+
+
+### Question:
+- When comparing distributions across categories, how does a violin plot differ from a boxplot, and when might you prefer one over the other?
+
+
+### Solution:
+If you want to compare the distribution of `Petal.Width` for each species, a violin plot can be an excellent choice, as it combines aspects of boxplots and density plots.
+
+```{r}
+# Violin plot of Petal.Width by Species
+ggplot(iris, aes(x = Species, y = Petal.Width, fill = Species)) +
+  geom_violin() +
+  labs(title = "Violin Plot of Petal Width by Species") +
+  theme_minimal()
+```
+
+
+---
+
+## Exercise 5: Correlation Plot Between Numerical Variables
+
+
+### Question:
+- Which pairs of variables are most strongly correlated in the dataset? How does this help you understand the relationships between measurements?
+
+
+### Solution:
+If you're interested in the correlation between numerical variables in the dataset, a correlation plot is a helpful visualization. It shows the strength and direction of relationships between variables.
+
+```{r}
+# Correlation plot using ggplot2
+cor_matrix <- cor(iris[,1:4])
+library(reshape2)
+
+# Convert the correlation matrix to long format
+cor_melt <- melt(cor_matrix)
+
+# Plot the correlation heatmap
+ggplot(cor_melt, aes(Var1, Var2, fill = value)) + 
+  geom_tile() + 
+  scale_fill_gradient2(midpoint = 0, low = "blue", high = "red", mid = "white") +
+  theme_minimal() +
+  labs(title = "Correlation Heatmap of Iris Dataset Variables")
+```
+
+
+---
+
+## Summary
+
+In this exercise, you explored different visualization techniques using the **iris** dataset to understand the relationships between variables. Depending on the type of relationship (numerical vs categorical, pairs of variables, etc.), different plots such as scatter plots, boxplots, and pairwise plots are useful for drawing insights.
+
+
 
 
 # More..
