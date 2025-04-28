@@ -5,7 +5,7 @@ date: "2025-04-22"
 output: pdf_document
 ---
 
-```{r setup, include=FALSE}
+```{r setup, include=FALSE, echo=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
 ```{r}
@@ -18,7 +18,6 @@ read.table()
 x <- 1
 # install.packages("ggplot2")
 ```
-
 ```{r}
 library(ggplot2)
 dat <- mtcars
@@ -72,5 +71,40 @@ plot(x = 1:nrow(time_series_data), y = time_series_data[,2], xlab = "Time", ylab
 lines(x = 1:nrow(time_series_data), y = time_series_data[,3], pch = 19, lwd = 5, lty = 2, type = 'p', col = "blue")
 
 ```
+
+```{r warning=FALSE}
+library(ggplot2)
+
+# Generate random samples from a normal distribution
+set.seed(123)  # For reproducibility
+data <- data.frame(value = rnorm(1000, mean = 50, sd = 10))
+
+# Create histogram with a density line
+ggplot(data, aes(x = value)) +
+  geom_histogram(aes(y = ..density..), binwidth = 1, fill = "blue", color = "black", alpha = 0.7) +
+  geom_density(color = "red", size = 1.2, linetype = "dotted") +  # Add a smooth density line
+  labs(
+    title = "Histogram with Density Curve",
+    x = "Value",
+    y = "Density"
+  ) +
+  theme(plot.title = element_text(hjust = 0.5))
+
+value = rnorm(1000, mean = 50, sd = 10)
+mean(value)
+sd(value)
+median(value)
+quantile(value,0.5)
+summary(value)
+library(ggcorrplot)
+?ggcorrplot
+```
+
+
+```{r}
+expand.grid(1:10,1:10)
+```
+
+
 
 
