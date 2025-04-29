@@ -330,7 +330,7 @@ mtcars[influential_points, ]
 These points should be carefully examined to see if they are errors, outliers, or legitimate values.
 
 
-
+# Generalized Linear Models
 
 
 # Ackowledgement
