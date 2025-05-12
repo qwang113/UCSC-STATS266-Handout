@@ -105,6 +105,50 @@ library(ggcorrplot)
 expand.grid(1:10,1:10)
 ```
 
+This is an example of data visualization based on iris dataset in R.
+```{r}
+library(ggplot2)
+data(iris)
+head(iris)
+
+# Scatter plot of Sepal.Length vs Sepal.Width
+p1 <- ggplot(iris, aes(x = Petal.Length, y = Petal.Width)) +
+  geom_point(aes(color = Species)) +
+  labs(title = "Scatter Plot of Petal Length vs Petal Width") +
+  theme_minimal()
+cor(
+  iris$Sepal.Length[which(iris$Species == "virginica")],
+  iris$Sepal.Width[which(iris$Species == "virginica")]
+  )
+```
+```{r}
+# Boxplot of Petal.Length by Species
+p2 <- ggplot(iris, aes(x = Species, y = Petal.Length, fill = Species)) +
+  geom_boxplot() +
+  labs(title = "Boxplot of Petal Length by Species") +
+  theme_minimal()
+
+cowplot::plot_grid(p1,p2)
+```
+
+```{r}
+set.seed(0)
+X <- matrix(runif(5000), ncol = 5)
+Y <- 0.9 + X[,1]*4 + X[,2]*0.6 + X[,3]*1.5 - X[,4]*2.5 - X[,5]*5.8 + rnorm(nrow(X),0,1)
+colnames(X) <- c("Sunshine","Rain","Carbon","Bugs","Disease")
+apple_data <- data.frame(cbind(Y,X))
+linear_model <- lm(Y ~ . , data = apple_data)
+results <- summary(linear_model)
+Y_hat <- predict(linear_model)
+
+res <- linear_model$residuals
+boxplot(res)
+hist(res)
+# plot(Y, Y_hat)
+plot(rnorm(100))
+```
+
+
 
 
 
