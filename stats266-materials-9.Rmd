@@ -1,0 +1,179 @@
+---
+title: "STATS 266 Handout - Basic Machine Learning with R"
+author: "Qi Wang"
+date: "`r Sys.Date()`"
+output: 
+  pdf_document:
+    number_sections: false
+    toc: true
+    toc_depth: 2
+    latex_engine: xelatex
+fontsize: 11pt
+geometry: margin=1in
+
+header-includes: |
+  \usepackage{xcolor}
+  \usepackage{hyperref}
+  \hypersetup{
+    colorlinks=true,
+    linkcolor=black,       % Internal links (e.g., table of contents)
+    urlcolor=blue,         % External hyperlinks (change to your preferred color)
+    citecolor=red          % Citation links
+  }
+---
+
+\newpage
+```{r setup, include=FALSE, warning=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
+```
+# 1. Introduction
+This tutorial introduces three fundamental machine learning algorithms—K-Nearest Neighbors (KNN), K-means clustering, and Decision Trees—using R. We explain each method's core concept, typical use cases, and advantages or limitations. Each section concludes with an applied example using the classic `iris` dataset.
+
+
+
+```{r}
+library(tidyverse)
+library(class)
+library(caret)
+library(cluster)
+library(rpart)
+library(rpart.plot)
+```
+
+# 1. Dataset Overview
+
+```{r}
+data(iris)
+head(iris)
+```
+
+# 3. K-Nearest Neighbors (KNN)
+
+## 3.1 What is KNN?
+
+K-Nearest Neighbors (KNN) is a non-parametric, instance-based learning algorithm. It assumes that similar points are near each other in feature space. Given a query point, it searches the training data for the K closest examples (usually based on Euclidean distance), and the majority class among those neighbors becomes the predicted class.
+
+Mathematically, the predicted class $\hat{y}$ is:
+
+$$
+\hat{y} = \underset{c}{\arg\max} \sum_{i = 1}^{K} I(y^{(i)} = c)
+$$
+
+Where:
+
+* $y^{(i)}$ is the label of the $i$-th nearest neighbor
+* $I(\cdot)$ is the indicator function
+
+### Characteristics
+
+* **Lazy learner:** No training phase, computation happens at query time.
+* **Distance-sensitive:** Sensitive to feature scaling and irrelevant features.
+* **Curse of dimensionality:** High-dimensional data can degrade performance.
+
+## 3.2 KNN Example in R
+
+```{r}
+set.seed(123)
+index <- createDataPartition(iris$Species, p = 0.8, list = FALSE)
+train <- iris[index, ]
+test <- iris[-index, ]
+
+train_x <- train[, 1:4]
+train_y <- train$Species
+test_x <- test[, 1:4]
+test_y <- test$Species
+
+pred_knn <- knn(train = train_x, test = test_x, cl = train_y, k = 5)
+confusionMatrix(pred_knn, test_y)
+```
+
+# 4. K-means Clustering
+
+## 4.1 What is K-means?
+
+K-means clustering is a centroid-based algorithm that partitions $n$ observations into $K$ clusters, where each observation belongs to the cluster with the nearest mean.
+
+The objective is to minimize the within-cluster sum of squares (WCSS):
+
+$$
+\text{WCSS} = \sum_{k=1}^{K} \sum_{x \in C_k} \|x - \mu_k\|^2
+$$
+
+Where:
+
+* $C_k$ is the set of points assigned to cluster $k$
+* $\mu_k$ is the mean (centroid) of cluster $k$
+
+### Algorithm Steps
+
+1. Initialize $K$ centroids (random or K-means++)
+2. Assign each point to the nearest centroid
+3. Update centroids as the mean of assigned points
+4. Repeat until convergence
+
+### Considerations
+
+* Sensitive to initialization → use `nstart > 1`
+* Distance metric is usually Euclidean
+* Cannot handle non-spherical clusters or outliers well
+
+## 4.2 K-means Example in R
+
+```{r}
+iris_kmeans <- kmeans(iris[, 1:4], centers = 3, nstart = 25)
+table(iris_kmeans$cluster, iris$Species)
+clusplot(iris[, 1:4], iris_kmeans$cluster, color=TRUE, shade=TRUE, labels=2, lines=0)
+```
+
+# 5. Decision Tree
+
+## 5.1 What is a Decision Tree?
+
+A decision tree is a recursive, hierarchical structure used for classification or regression. It splits the dataset based on input variables using binary decision rules such as:
+
+$$
+\text{if } x_j \le t \Rightarrow \text{go left}, \text{ else go right}
+$$
+
+The tree grows by selecting the best feature and threshold at each node using impurity measures such as **Gini impurity** or **Entropy**.
+
+### Splitting Criteria for Classification
+
+* **Gini Impurity**:
+
+$$
+G = 1 - \sum_{k=1}^{K} p_k^2
+$$
+
+* **Entropy**:
+
+$$
+H = - \sum_{k=1}^{K} p_k \log_2(p_k)
+$$
+
+Where $p_k$ is the proportion of class $k$ in the node.
+
+### Characteristics
+
+* **Interpretable:** Easy to visualize and explain
+* **Greedy algorithm:** Splits are chosen locally at each node
+* **Overfitting risk:** Often needs pruning or ensemble methods
+
+## 5.2 Decision Tree Example in R
+
+```{r}
+tree_model <- rpart(Species ~ ., data = train, method = "class")
+rpart.plot(tree_model, type = 2, extra = 104)
+tree_pred <- predict(tree_model, newdata = test, type = "class")
+confusionMatrix(tree_pred, test$Species)
+```
+
+# 6. Summary
+
+We introduced three fundamental machine learning algorithms:
+
+* **KNN** for classification using proximity in feature space.
+* **K-means** for clustering based on similarity.
+* **Decision Trees** for interpretable classification with rule-based splits.
+
+Each was demonstrated on the iris dataset using R code examples.

@@ -1,5 +1,5 @@
 ---
-title: "STATS 266 Handout - Rmarkdown and LaTeX"
+title: "STATS 266 Handout - Generalized Linear Models"
 author: "Qi Wang"
 date: "`r Sys.Date()`"
 output: 
